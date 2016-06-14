@@ -1,0 +1,581 @@
+C++语言学习之STL 的组成
+STL有三大核心部分：容器（Container）、算法（Algorithms）、迭代器（Iterator），容器适配器（container adaptor），函数对象(functor)，除此之外还有STL其他标准组件。通俗的讲：
+容器：装东西的东西，装水的杯子，装咸水的大海，装人的教室……STL里的容器是可容纳一些数据的模板类。
+算法：就是往杯子里倒水，往大海里排污，从教室里撵人……STL里的算法，就是处理容器里面数据的方法、操作。
+迭代器：往杯子里倒水的水壶，排污的管道，撵人的那个物业管理人员……STL里的迭代器：遍历容器中数据的对象。对存储于容器中的数据进行处理时，迭代器能从一个成员移向另一个成员。他能按预先定义的顺序在某些容器中的成员间移动。对普通的一维数组、向量、双端队列和列表来说，迭代器是一种指针。
+下面让我们来看看专家是怎么说的：
+容器（container）：容器是数据在内存中组织的方法，例如，数组、堆栈、队列、链表或二叉树（不过这些都不是STL标准容器）。STL中的容器是一种存储T（Template）类型值的有限集合的数据结构,容器的内部实现一般是类。这些值可以是对象本身，如果数据类型T代表的是Class的话。
+算法（algorithm）：算法是应用在容器上以各种方法处理其内容的行为或功能。例如，有对容器内容排序、复制、检索和合并的算法。在STL中，算法是由模板函数表现的。这些函数不是容器类的成员函数。相反，它们是独立的函数。令人吃惊的特点之一就是其算法如此通用。不仅可以将其用于STL容器，而且可以用于普通的C＋＋数组或任何其他应用程序指定的容器。
+迭代器(iterator)：一旦选定一种容器类型和数据行为(算法)，那么剩下唯一要他做的就是用迭代器使其相互作用。可以把达代器看作一个指向容器中元素的普通指针。可以如递增一个指针那样递增迭代器，使其依次指向容器中每一个后继的元素。迭代器是STL的一个关键部分，因为它将算法和容器连在一起。
+下面我将依次介绍STL的这三个主要组件。
+1.       容器
+STL中的容器有队列容器和关联容器，容器适配器（congtainer adapters：stack,queue，priority queue），位集（bit_set），串包(string_package)等等。
+　　在本文中，我将介绍list,vector，deque等队列容器，和set和multisets,map和multimaps等关联容器，一共7种基本容器类。
+　　队列容器（顺序容器）：队列容器按照线性排列来存储T类型值的集合，队列的每个成员都有自己的特有的位置。顺序容器有向量类型、双端队列类型、列表类型三种。
+u     基本容器——向量
+向量（vector容器类）：＃include ，vector是一种动态数组，是基本数组的类模板。其内部定义了很多基本操作。既然这是一个类，那么它就会有自己的构造函数。vector 类中定义了4中种构造函数：
+·  默认构造函数，构造一个初始长度为0的空向量，如：vector v1;
+·  带有单个整形参数的构造函数，此参数描述了向量的初始大小。这个构造函数还有一个可选的参数，这是一个类型为T的实例，描述了各个向量种各成员的初始值；如：vector v2(n,0); 如果预先定义了：n,他的成员值都被初始化为0；
+·  复制构造函数，构造一个新的向量，作为已存在的向量的完全复制，如：vector v3(v2);
+·  带两个常量参数的构造函数，产生初始值为一个区间的向量。区间由一个半开区间[first,last) 来指定。如：vector v4(first,last）
+下面一个例子用的是第四种构造方法，其它的方法读者可以自己试试。
+view plain
+1.      //程序：初始化演示  
+2.      #include    
+3.      #include   
+4.      #include   
+5.      using namespace std;  
+6.         
+7.      int ar[10] = {  12, 45, 234, 64, 12, 35, 63, 23, 12, 55  };  
+8.      char* str = "Hello World";  
+9.         
+10.   int main()  
+11.   {  
+12.       vector <int> vec1(ar, ar+10);   //first=ar,last=ar+10,不包括ar+10  
+13.       vector < char > vec2(str,str+strlen(str)); //first=str,last= str+strlen(str),  
+14.       cout<<"vec1:"<
+15.       //打印vec1和vec2，const_iterator是迭代器，后面会讲到  
+16.       //当然，也可以用for (int i=0; i输出  
+17.       //size()是vector的一个成员函数  
+18.       for(vector<int>::const_iterator p=vec1.begin();p!=vec1.end(); ++p)  
+19.           cout<<*p;  
+20.           cout<<'/n'<<"vec2:"<
+21.       for(vector< char >::const_iterator p1=vec2.begin();p1!=vec2.end(); ++p1)  
+22.           cout<<*p1;  
+23.       cout<<'/n';  
+24.       return 0;  
+25.   }       
+ 
+为了帮助理解向量的概念，这里写了一个小例子，其中用到了vector的成员函数：begin()，end()，push_back()，assign()，front()，back()，erase()，empty()，at()，size()。
+ 
+view plain
+1.      #include   
+2.      #include   
+3.      using namespace std;  
+4.         
+5.      typedef vector<int> INTVECTOR;//自定义类型INTVECTOR  
+6.      //测试vector容器的功能  
+7.         
+8.      int main()  
+9.      {  
+10.       //vec1对象初始为空  
+11.       INTVECTOR vec1;    
+12.       //vec2对象最初有10个值为6的元素    
+13.       INTVECTOR vec2(10,6);   
+14.       //vec3对象最初有3个值为6的元素，拷贝构造  
+15.       INTVECTOR vec3(vec2.begin(),vec2.begin()+3);   
+16.       //声明一个名为i的双向迭代器  
+17.       INTVECTOR::iterator i;  
+18.       //从前向后显示vec1中的数据  
+19.       cout<<"vec1.begin()--vec1.end():"<
+20.       for (i =vec1.begin(); i !=vec1.end(); ++i)  
+21.           cout << *i << " ";  
+22.       cout << endl;  
+23.       //从前向后显示vec2中的数据  
+24.       cout<<"vec2.begin()--vec2.end():"<
+25.       for (i =vec2.begin(); i !=vec2.end(); ++i)  
+26.           cout << *i << " ";  
+27.       cout << endl;  
+28.       //从前向后显示vec3中的数据  
+29.       cout<<"vec3.begin()--vec3.end():"<
+30.       for (i =vec3.begin(); i !=vec3.end(); ++i)  
+31.           cout << *i << " ";  
+32.       cout << endl;  
+33.       //测试添加和插入成员函数，vector不支持从前插入  
+34.       vec1.push_back(2);//从后面添加一个成员  
+35.       vec1.push_back(4);  
+36.       vec1.insert(vec1.begin()+1,5);//在vec1第一个的位置上插入成员5  
+37.       //从vec1第一的位置开始插入vec3的所有成员  
+38.       vec1.insert(vec1.begin()+1,vec3.begin(),vec3.end());  
+39.       cout<<"after push() and insert() now the vec1 is:" <
+40.       for (i =vec1.begin(); i !=vec1.end(); ++i)  
+41.           cout << *i << " ";  
+42.       cout << endl;  
+43.       //测试赋值成员函数  
+44.       vec2.assign(8,1);   // 重新给vec2赋值，8个成员的初始值都为1  
+45.       cout<<"vec2.assign(8,1):" <
+46.       for (i =vec2.begin(); i !=vec2.end(); ++i)  
+47.           cout << *i << " ";  
+48.       cout << endl;  
+49.       //测试引用类函数  
+50.       cout<<"vec1.front()="<//vec1第零个成员  
+51.       cout<<"vec1.back()="<//vec1的最后一个成员  
+52.       cout<<"vec1.at(4)="<//vec1的第五个成员  
+53.       cout<<"vec1[4]="<
+54.       //测试移出和删除  
+55.       vec1.pop_back();//将最后一个成员移出vec1  
+56.       vec1.erase(vec1.begin()+1,vec1.end()-2);//删除成员  
+57.       cout<<"vec1.pop_back() and vec1.erase():" <
+58.       for (i =vec1.begin(); i !=vec1.end(); ++i)  
+59.           cout << *i << " ";  
+60.       cout << endl;  
+61.       //显示序列的状态信息  
+62.       cout<<"vec1.size(): "<//打印成员个数  
+63.       cout<<"vec1.empty(): "<//清空  
+64.   }  
+ 
+push_back()是将数据放入vector（向量）或deque（双端队列）的标准函数。Insert()是一个与之类似的函数，然而它在所有容器中都可以使用，但是用法更加复杂。end()实际上是取末尾加一，以便让循环正确运行--它返回的指针指向最靠近数组界限的数据。
+在Java里面也有向量的概念。Java中的向量是对象的集合。其中，各元素可以不必同类型，元素可以增加和删除，不能直接加入原始数据类型。
+ 
+u     双端队列（qeque容器类）：
+deque（读音：deck，意即：double queue，#include）容器类与vector类似，支持随机访问和快速插入删除，它在容器中某一位置上的操作所花费的是线性时间。与vector不同的是，deque还支持从开始端插入数据：push_front()。此外deque也不支持与vector的capacity()、reserve()类似的操作。
+view plain
+1.      #include   
+2.      #include   
+3.      using namespace std;  
+4.         
+5.      typedef deque<int> INTDEQUE;//有些人很讨厌这种定义法，呵呵  
+6.         
+7.      //从前向后显示deque队列的全部元素  
+8.      void put_deque(INTDEQUE deque, char *name)  
+9.      {  
+10.       INTDEQUE::iterator pdeque;//仍然使用迭代器输出  
+11.       cout << "The contents of " << name << " : ";  
+12.       for(pdeque = deque.begin(); pdeque != deque.end(); pdeque++)  
+13.           cout << *pdeque << " ";//注意有 "*"号哦，没有"*"号的话会报错  
+14.       cout<
+15.   }  
+16.      
+17.   //测试deqtor容器的功能  
+18.   int main()  
+19.   {  
+20.       //deq1对象初始为空  
+21.       INTDEQUE deq1;    
+22.       //deq2对象最初有10个值为6的元素    
+23.       INTDEQUE deq2(10,6);   
+24.       //声明一个名为i的双向迭代器变量  
+25.       INTDEQUE::iterator i;  
+26.       //从前向后显示deq1中的数据  
+27.       put_deque(deq1,"deq1");  
+28.       //从前向后显示deq2中的数据  
+29.       put_deque(deq2,"deq2");  
+30.       //从deq1序列后面添加两个元素  
+31.       deq1.push_back(2);  
+32.       deq1.push_back(4);  
+33.       cout<<"deq1.push_back(2) and deq1.push_back(4):"<
+34.       put_deque(deq1,"deq1");  
+35.       //从deq1序列前面添加两个元素  
+36.       deq1.push_front(5);  
+37.       deq1.push_front(7);  
+38.       cout<<"deq1.push_front(5) and deq1.push_front(7):"<
+39.       put_deque(deq1,"deq1");  
+40.       //在deq1序列中间插入数据  
+41.       deq1.insert(deq1.begin()+1,3,9);  
+42.       cout<<"deq1.insert(deq1.begin()+1,3,9):"<
+43.       put_deque(deq1,"deq1");  
+44.       //测试引用类函数  
+45.       cout<<"deq1.at(4)="<
+46.       cout<<"deq1[4]="<
+47.       deq1.at(1)=10;  
+48.       deq1[2]=12;  
+49.       cout<<"deq1.at(1)=10 and deq1[2]=12 :"<
+50.       put_deque(deq1,"deq1");  
+51.       //从deq1序列的前后各移去一个元素  
+52.       deq1.pop_front();  
+53.       deq1.pop_back();  
+54.       cout<<"deq1.pop_front() and deq1.pop_back():"<
+55.       put_deque(deq1,"deq1");  
+56.       //清除deq1中的第2个元素  
+57.       deq1.erase(deq1.begin()+1);  
+58.       cout<<"deq1.erase(deq1.begin()+1):"<
+59.       put_deque(deq1,"deq1");  
+60.       //对deq2赋值并显示  
+61.       deq2.assign(8,1);  
+62.       cout<<"deq2.assign(8,1):"<
+63.       put_deque(deq2,"deq2");  
+64.   }  
+ 
+上面我们演示了deque如何进行插入删除等操作，像erase(),assign()是大多数容器都有的操作。关于deque的其他操作请参阅其他书籍。
+
+u     表（List容器类）
+　List（#include）又叫链表，是一种双线性列表，只能顺序访问（从前向后或者从后向前），图2是list的数据组织形式。与前面两种容器类有一个明显的区别就是：它不支持随机访问。要访问表中某个下标处的项需要从表头或表尾处（接近该下标的一端）开始循环。而且缺少下标预算符：operator[]。
+ 
+图2 
+　　同时，list仍然包涵了erase(),begin(),end(),insert(),push_back(),push_front()这些基本函数，下面我们来演示一下list的其他函数功能。merge()：合并两个排序列表；splice()：拼接两个列表；sort()：列表的排序。
+view plain
+1.      #include   
+2.      #include   
+3.      #include   
+4.      using namespace std;  
+5.         
+6.      void PrintIt(list<int> n)  
+7.      {  
+8.          for(list<int>::iterator iter=n.begin(); iter!=n.end(); ++iter)  
+9.            cout<<*iter<<" ";//用迭代器进行输出循环  
+10.   }  
+11.        
+12.   int main()  
+13.   {  
+14.       list<int> listn1,listn2;    //给listn1,listn2初始化  
+15.       listn1.push_back(123);  
+16.       listn1.push_back(0);  
+17.       listn1.push_back(34);  
+18.       listn1.push_back(1123);    //now listn1:123,0,34,1123  
+19.       listn2.push_back(100);  
+20.       listn2.push_back(12);    //now listn2:12,100  
+21.       listn1.sort();  
+22.       listn2.sort();    //给listn1和listn2排序  
+23.       //now listn1:0,34,123,1123         listn2:12,100  
+24.       PrintIt(listn1);  
+25.       cout<
+26.       PrintIt(listn2);  
+27.       listn1.merge(listn2);    //合并两个排序列表后,listn1:0，12，34，100，123，1123  
+28.       cout<
+29.       PrintIt(listn1);  
+30.   }  
+ 
+上面并没有演示splice()函数的用法，这是一个拗口的函数。用起来有点麻烦。图3所示是splice函数的功能。将一个列表插入到另一个列表当中。list容器类定义了splice()函数的3个版本：
+splice(position,list_value);
+splice(position,list_value,ptr);
+splice(position,list_value,first,last);
+list_value是一个已存在的列表，它将被插入到源列表中，position是一个迭代参数，他当前指向的是要进行拼接的列表中的特定位置。
+
+                                  
+listn1:123,0,34,1123   listn2:12,100
+执行listn1.splice(find(listn1.begin(),listn1.end(),0),listn2);之后，listn1将变为：123，12，100，34，1123。即把listn2插入到listn1的0这个元素之前。其中，find()函数找到0这个元素在listn1中的位置。值得注意的是，在执行splice之后，list_value将不复存在了。这个例子中是listn2将不再存在。
+　　第二个版本当中的ptr是一个迭代器参数，执行的结果是把ptr所指向的值直接插入到position当前指向的位置之前.这将只向源列表中插入一个元素。
+　　第三个版本的first和last也是迭代器参数，并不等于list_value.begin(),list_value.end()。First指的是要插入的列的第一个元素，last指的是要插入的列的最后一个元素。
+如果listn1:123,0,34,1123 listn2:12,43，87，100 执行完以下函数之后
+listn1.splice(find(listn1.begin(),listn1.end(),0),++listn2.begin(),--listn2.end());
+listn1:123,43,87,0,34,1123  listn2:12,100
+以上，我们学习了vector,deque,list三种基本顺序容器，其他的顺序容器还有：slist,bit_vector等等。
+u     集和多集（set 和multiset 容器类）：
+一个集合（#include）是一个容器，它其中所包含的元素的值是唯一的。这在收集一个数据的具体值的时候是有用的。集合中的元素按一定的顺序排列，并被作为集合中的实例。如果你需要一个键/值对（pair）来存储数据，map（也是一个关联容器，后面将马上要讲到）是一个更好的选择。一个集合通过一个链表来组织，在插入操作和删除操作上比向量（vector）快，但查找或添加末尾的元素时会有些慢。
+在集中，所有的成员都是排列好的。如果先后往一个集中插入：12，2，3，123，5，65 　　则输出该集时为：2，3，5，12，65，123
+集和多集的区别是：set支持唯一键值，set中的值都是特定的，而且只出现一次；而multiset中可以出现副本键，同一值可以出现多次。
+Set和multiset的模板参数：
+template
+第一个参数key是所存储的键的类型，第二个参数是为排序值而定义的比较函数的类型，第三个参数是被实现的存储分配符的类型。在有些编译器的具体实现中，第三个参数可以省略。第二个参数使用了合适形式的迭代器为键定义了特定的关系操作符，并用来在容器中遍历值时建立顺序。集的迭代器是双向，同时也是常量的，所以迭代器在使用的时候不能修改元素的值。
+Set定义了三个构造函数：
+默认构造函数：
+explicit set(const Compare&=compare());
+如：set > set1;
+less是一个标准类，用于形成降序排列函数对象。升序排列是用greater。通过指定某一预先定义的区间来初始化set对象的构造函数：
+template set(InputIterator, InputIterator,/ const Compare&=compare());
+如：set >set2(vector1.begin(),vector1.end());
+复制构造函数：
+set（const set）;
+如：set >set3(set2);
+下面我们来看一个简单的集和多集的插入例程：
+view plain
+1.      #include   
+2.      #include   
+3.      using namespace std;  
+4.         
+5.      int main()  
+6.      {  
+7.          set<int> set1;  
+8.          for(int i=0; i<10; ++i)  
+9.              set1.insert(i);  
+10.       for(set<int>::iterator p=set1.begin();p!=set1.end();++p)  
+11.           cout<<*p<<"";  
+12.       if(set1.insert(3).second)//把3插入到set1中  
+13.   //插入成功则set1.insert(3).second返回1，否则返回0  
+14.   //此例中，集中已经有3这个元素了，所以插入将失败  
+15.           cout<<"set insert success";  
+16.       else  
+17.           cout<<"set insert failed";  
+18.       int a[] = {4, 1, 1, 1, 1, 1, 0, 5, 1, 0};  
+19.       multiset<int> A;  
+20.       A.insert(set1.begin(),set1.end());  
+21.       A.insert(a,a+10);  
+22.       cout<
+23.       for(multiset<int>::iterator p=A.begin();p!=A.end();++p)  
+24.       cout<<*p<<" ";  
+25.       return 0;  
+26.   }  
+ 
+u     映射和多重映射（map 和multimap）
+映射和多重映射(#include)基于某一类型Key的键集的存在，提供对T类型的数据进行快速和高效的检索。对map而言，键只是指存储在容器中的某一成员。Map不支持副本键，multimap支持副本键。Map和multimap对象包涵了键和各个键有关的值，键和值的数据类型是不相同的，这与set不同。set中的key和value是Key类型的，而map中的key和value是一个pair结构中的两个分量。Map支持下表运算符operator[],用访问普通数组的方式访问map，不过下标为map的键。在multimap中一个键可以对应多个不同的值。
+下面的例程说明了map中键与值的关系。
+#include
+#include
+using namespace std;
+ 
+int main()
+{
+    map > map1;
+    map >::iterator mapIter;
+    //char 是键的类型，int是值的类型
+    //下面是初始化，与数组类似
+    //也可以用map1.insert(map >::value_type(''c'',3));
+    map1['c']=3;
+    map1['d']=4;
+    map1['a']=1;
+    map1['b']=2;
+    for(mapIter=map1.begin();mapIter!=map1.end();++mapIter)
+        cout<<" "<<(*mapIter).first<<": "<<(*mapIter).second;
+    //first对应定义中的char键，second对应定义中的int值  
+    //检索对应于d键的值是这样做的：
+    map >::const_iterator ptr;
+    ptr=map1.find('d');
+    cout<<'/n'<<" "<<(*ptr).first<<" 键对应于值："<<(*ptr).second;
+    return 0;
+}
+　　从以上例程中，我们可以看到map对象的行为和一般数组的行为类似。Map允许两个或多个值使用比较操作符。下面我们再看看multimap:
+view plain
+1.      #include   
+2.      #include   
+3.      #include   
+4.      using namespace std;  
+5.         
+6.      int main()  
+7.      {  
+8.          multimap >mulmap;  
+9.          multimap >::iterator p;  
+10.       //初始化多重映射mulmap:  
+11.       typedef multimap >::value_type vt;  
+12.       typedef string s;  
+13.       mulmap.insert(vt(s("Tom "),s("is a student")));  
+14.       mulmap.insert(vt(s("Tom "),s("is a boy")));  
+15.       mulmap.insert(vt(s("Tom "),s("is a bad boy of blue!")));  
+16.       mulmap.insert(vt(s("Jerry "),s("is a student")));  
+17.       mulmap.insert(vt(s("Jerry "),s("is a beatutiful girl")));  
+18.       mulmap.insert(vt(s("DJ "),s("is a student")));  
+19.       //输出初始化以后的多重映射mulmap:  
+20.       for(p=mulmap.begin();p!=mulmap.end();++p)  
+21.           cout<<(*p).first<<(*p).second<
+22.       //检索并输出Jerry键所对应的所有的值  
+23.       cout<<"find Jerry :"<
+24.       p=mulmap.find(s("Jerry "));  
+25.       while((*p).first=="Jerry ")  
+26.       {  
+27.           cout<<(*p).first<<(*p).second<
+28.           ++p;  
+29.       }     
+30.       return 0;  
+31.   }   
+ 
+在map中是不允许一个键对应多个值的，在multimap中，不支持operator[],也就是说不支持map中允许的下标操作。
+2.       算法（algorithm）：
+#inlcude
+STL中算法的大部分都不作为某些特定容器类的成员函数，他们是泛型的，每个算法都有处理大量不同容器类中数据的使用。值得注意的是，STL中的算法大多有多种版本，用户可以依照具体的情况选择合适版本。中在STL的泛型算法中有4类基本的算法：
+变序型队列算法：可以改变容器内的数据；
+非变序型队列算法：处理容器内的数据而不改变他们；
+排序值算法：包涵对容器中的值进行排序和合并的算法，还有二叉搜索算法、通用数值算法。（注：STL的算法并不只是针对STL容器，对一般容器也是适用的。）
+变序型队列算法：又叫可修改的序列算法。这类算法有复制（copy）算法、交换（swap）算法、替代（replace）算法、删除（clear）算法，移动（remove）算法、翻转（reverse）算法等等。这些算法可以改变容器中的数据（数据值和值在容器中的位置）。
+下面介绍2个比较常用的算法reverse()和copy()。
+view plain
+1.      #include   
+2.      #include   
+3.      #include   
+4.      //下面用到了输出迭代器ostream_iterator  
+5.      using namespace std;  
+6.         
+7.      int main()  
+8.      {  
+9.          int arr[6]={1,12,3,2,1215,90};  
+10.       int arr1[7];  
+11.       int arr2[6]={2,5,6,9,0,-56};  
+12.       copy(arr,(arr+6),arr1);//将数组aar复制到arr1  
+13.       cout<<"arr[6] copy to arr1[7],now arr1: "<
+14.       for(int i=0;i<7;i++)  
+15.           cout<<" "<
+16.       reverse(arr,arr+6);//将排好序的arr翻转  
+17.       cout<<'/n'<<"arr reversed ,now arr:"<
+18.       copy(arr,arr+6,ostream_iterator<int>(cout, " "));//复制到输出迭代器  
+19.       swap_ranges(arr,arr+6,arr2);//交换arr和arr2序列  
+20.       cout<<'/n'<<"arr swaped to arr2,now arr:"<
+21.       copy(arr,arr+6,ostream_iterator<int>(cout, " "));  
+22.       cout<<'/n'<<"arr2:"<
+23.       copy(arr2,arr2+6,ostream_iterator<int>(cout, " "));  
+24.       return 0;  
+25.   }  
+ 
+revese()的功能是将一个容器内的数据顺序翻转过来，它的原型是：
+template
+void reverse(Bidirectional first, Bidirectional last);
+将first和last之间的元素翻转过来，上例中你也可以只将arr中的一部分进行翻转：
+reverse(arr+3,arr+6); 这也是有效的。First和last需要指定一个操作区间。
+Copy()是要将一个容器内的数据复制到另一个容器内，它的原型是：
+  Template，class OutputIterator>
+  OutputIterator copy(InputIterator first, InputIterator last, OutputIterator result);
+它把[first,last－1]内的队列成员复制到区间[result,result+(last-first)-1]中。泛型交换算法：
+ 
+Swap()操作的是单值交换，它的原型是：
+template
+void swap(T& a,T& b);
+ 
+swap_ranges()操作的是两个相等大小区间中的值，它的原型是：
+  template
+  ForwardIterator2swap_ranges(ForwardIterator1 first1,ForwardIterator1 last1, ForwardIterator1 first2);
+交换区间[first1,last1-1]和[first2, first2+(last1-first1)-1]之间的值，并假设这两个区间是不重叠的。
+非变序型队列算法，又叫不可修改的序列算法。这一类算法操作不影响其操作的容器的内容，包括搜索队列成员算法，等价性检查算法，计算队列成员个数的算法。我将用下面的例子介绍其中的find(),search(),count()：
+view plain
+1.      #include   
+2.      #include   
+3.      #include   
+4.      using namespace std;  
+5.         
+6.      int main()  
+7.      {  
+8.          int a[10]={12,31,5,2,23,121,0,89,34,66};  
+9.          vector<int> v1(a,a+10);  
+10.       vector<int>::iterator result1,result2;//result1和result2是随机访问迭代器  
+11.       result1=find(v1.begin(),v1.end(),2);  
+12.       //在v1中找到2，result1指向v1中的2  
+13.       result2=find(v1.begin(),v1.end(),8);  
+14.       //在v1中没有找到8，result2指向的是v1.end()  
+15.       cout<//3－0＝3或4－1＝3，屏幕结果是3  
+16.       cout<
+17.       int b[9]={5,2,23,54,5,5,5,2,2};  
+18.       vector<int> v2(a+2,a+8);  
+19.       vector<int> v3(b,b+4);  
+20.       result1=search(v1.begin(),v1.end(),v2.begin(),v2.end());  
+21.       cout<<*result1<
+22.       //在v1中找到了序列v2，result1指向v2在v1中开始的位置  
+23.        result1=search(v1.begin(),v1.end(),v3.begin(),v3.end());  
+24.        cout<<*(result1-1)<
+25.       //在v1中没有找到序列v3，result指向v1.end(),屏幕打印出v1的最后一个元素66     
+26.        vector<int> v4(b,b+9);  
+27.        int i=count(v4.begin(),v4.end(),5);  
+28.        int j=count(v4.begin(),v4.end(),2);  
+29.        cout<<"there are "<" members in v4 equel to 5"<
+30.        cout<<"there are "<" members in v4 equel to 2"<
+31.        //计算v4中有多少个成员等于 5,2  
+32.        return 0;          
+33.   }  
+ 
+find()的原型是：
+template，class EqualityComparable>
+InputIterator find(InputIterator first, InputIterator last, const EqualityComparable& value);
+其功能是在序列[first,last-1]中查找value值，如果找到，就返回一个指向value在序列中第一次出现的迭代，如果没有找到，就返回一个指向last的迭代（last并不属于序列）。
+search()的原型是：
+template
+ForwardIterator1 search(ForwardIterator1 first1, ForwardIterator1 last1,                        ForwardIterator2 first2, ForwardIterator2 last2);
+其功能是在源序列[first1,last1-1]查找目标序列[first2，last2-1]如果查找成功，就返回一个指向源序列中目标序列出现的首位置的迭代。查找失败则返回一个指向last的迭代。
+Count()的原型是：
+template
+iterator_traits::difference_type count(InputIterator first,
+InputIterator last, const EqualityComparable& value);
+其功能是在序列[first,last-1]中查找出等于value的成员，返回等于value得成员的个数。
+排序算法（sort algorithm）：这一类算法很多，功能强大同时也相对复杂一些。这些算法依赖的是关系运算。在这里我只介绍其中比较简单的几种排序算法：sort(),merge(),includes()
+view plain
+1.      #include   
+2.      #include   
+3.      using namespace std;  
+4.         
+5.      int main()  
+6.      {  
+7.          int a[10]={12,0,5,3,6,8,9,34,32,18};  
+8.          int b[5]={5,3,6,8,9};  
+9.          int d[15];  
+10.       sort(a,a+10);  
+11.       for(int i=0;i<10;i++)  
+12.         cout<<" "<
+13.       sort(b,b+5);  
+14.       if(includes(a,a+10,b,b+5))  
+15.          cout<<'/n'<<"sorted b members are included in a."<
+16.       else  
+17.          cout<<"sorted a dosn`t contain sorted b!";  
+18.       merge(a,a+10,b,b+5,d);  
+19.       for(int j=0;j<15;j++)  
+20.          cout<<" "<
+21.       return 0;  
+22.   }  
+ 
+sort()的原型是：
+template
+void sort(RandomAccessIterator first, RandomAccessIterator last);
+功能是对[first,last-1]区间内的元素进行排序操作。与之类似的操作还有：partial_sort(), stable_sort()，partial_sort_copy()等等。
+merge()的原型是：
+template
+OutputIterator merge(InputIterator1 first1, InputIterator1 last1,InputIterator2  first2, InputIterator2 st2,OutputIterator result);
+将有序区间[first1,last1-1]和[first2,last2-1]合并到[result, result + (last1 - first1) + (last2 - first2)-1]区间内。
+Includes()的原型是：
+template
+bool includes(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2);
+其功能是检查有序区间[first2,last2-1]内元素是否都在[first1,last1-1]区间内，返回一个bool值。
+通用数值算法（generalized numeric algorithms）：这一类算法还不多，涉及到专业领域中有用的算术操作，独立包涵于头文件中。
+　　STL中的算法大都有多种版本，常见的版本有以下4中：
+默认版本，假设给出了特定操作符；
+一般版本，使用了成员提供的操作符；
+复制版本，对原队列的副本进行操作，常带有 _copy 后缀；
+谓词版本，只应用于满足给定谓词的队列成员，常带有 _if 后缀；
+ 
+以上我们学习了STL容器和算法的概念，以及一些简单的STL容器和算法。在使用算法处理容器内的数据时，需要从一个数据成员移向另一个数据成员，迭代器恰好实现了这一功能。下面我们来学习STL迭代器 。
+3.       迭代器（itertor）：
+#include
+迭代器实际上是一种泛化指针，如果一个迭代器指向了容器中的某一成员，那么迭代器将可以通过自增自减来遍历容器中的所有成员。迭代器是联系容器和算法的媒介，是算法操作容器的接口。在运用算法操作容器的时候，我们常常在不知不觉中已经使用了迭代器。
+STL中定义了6种迭代器：
+输入迭代器，在容器的连续区间内向前移动，可以读取容器内任意值；
+输出迭代器，把值写进它所指向的队列成员中；
+前向迭代器，读取队列中的值，并可以向前移动到下一位置（++p,p++）；
+双向迭代器，读取队列中的值，并可以向前向后遍历容器；
+随机访问迭代器, vector::iterator，list::iterator等都是这种迭代器 ；
+流迭代器，可以直接输出、输入流中的值；
+实际上，在前面的例子中，我们不停的在用迭代器。下面我们用几个例子来帮助理解这些迭代器的用法。
+下面的例子用到了输入输出迭代器：
+view plain
+1.      #include   
+2.      #include   
+3.      #include   
+4.      #include   
+5.      #include   
+6.      using namespace std;  
+7.         
+8.      int main()  
+9.      {  
+10.       vector v1;  
+11.       ifstream file("Text1.txt");  
+12.       if(file.fail())  
+13.       {  
+14.           cout<<"open file Text1.txt failed"<
+15.           return 1;  
+16.       }     
+17.       copy(istream_iterator(file),istream_iterator(),inserter(v1,v1.begin()));  
+18.       copy(v1.begin(),v1.end(),ostream_iterator(cout," "));  
+19.       cout<
+20.       return 0;  
+21.   }  
+ 
+这里用到了输入迭代器istream_iterator，输出迭代器ostream_iterator。程序完成了将一个文件输出到屏幕的功能，先将文件读入，然后通过输入迭代器把文件内容复制到类型为字符串的向量容器内，最后由输出迭代器输出。Inserter是一个输入迭代器的一个函数(迭代器适配器)，它的使用方法是：
+inserter (container ,pos);
+container是将要用来存入数据的容器，pos是容器存入数据的开始位置。上例中，是把文件内容存入（copy()）到向量v1中。
+4.       STL的其他标准组件
+函数对象（functor或者funtion objects）
+#include
+函数对象又称之为仿函数。函数对象将函数封装在一个对象中，使得它可作为参数传递给合适的STL算法，从而使算法的功能得以扩展。可以把它当作函数来使用。用户也可以定义自己的函数对象。下面让我们来定义一个自己的函数对象.
+view plain
+1.      #include   
+2.      using namespace std;  
+3.         
+4.      struct int_max{  
+5.      int operator()(int x,int y){return x>y?x:y; }  
+6.      };//operator() 重载了"（）"， (int x,int y)是参数列表  
+7.         
+8.      int main()  
+9.      {  
+10.       cout<
+11.       return 0;  
+12.   }  
+ 
+这里的int_max（）就是一个函数对象，struct关键字也可以用class来代替，只不过struct默认情况下是公有访问权限，而class定义的是默认私有访问权限。下面我们来定义一个STL风格的函数对象：
+view plain
+1.      #include   
+2.      #include   
+3.      using namespace std;  
+4.         
+5.      struct adder : public unary_function<double, void>  
+6.      {  
+7.          adder() : sum(0) {}  
+8.          double sum;  
+9.          void operator()(double x) { sum += x; }  
+10.   };  
+11.      
+12.   int main()  
+13.   {    
+14.       double a[5]={0.5644,1.1,6.6,8.8,9.9};  
+15.       vector<double> V(a,a+5);  
+16.       adder result = for_each(V.begin(), V.end(), adder());  
+17.       cout << "The sum is " << result.sum << endl;  
+18.       return 0;  
+19.   }  
+ 
+在这里，我们定义了一个函数对象adder()，这也是一个类，它的基类是unary_function函数对象。unary_function是一个空基类，不包涵任何操作或变量。只是一种格式说明，它有两个参数，第一个参数是函数对象的使用数据类型，第二个参数是它的返回类型。基于它所定义的函数对象是一元函数对象。（注：用关键字struct或者class定义的类型实际上都是"类"）
+STL内定义了各种函数对象，否定器、约束器、一元谓词、二元谓词都是常用的函数对象。函数对象对于编程来说很重要，因为他如同对象类型的抽象一样作用于操作。
+适配器（adapter）
+适配器是用来修改其他组件接口的STL组件，是带有一个参数的类模板（这个参数是操作的值的数据类型）。STL定义了3种形式的适配器：容器适配器，迭代器适配器，函数适配器。
+容器适配器：包括栈（stack）、队列(queue)、优先(priority_queue)。使用容器适配器，stack就可以被实现为基本容器类型（vector,dequeue,list）的适配。可以把stack看作是某种特殊的vctor、deque或者list容器，只是其操作仍然受到stack本身属性的限制。queue和priority_queue与之类似。容器适配器的接口更为简单，只是受限比一般容器要多；
+迭代器适配器：修改为某些基本容器定义的迭代器的接口的一种STL组件。反向迭代器和插入迭代器都属于迭代器适配器，迭代器适配器扩展了迭代器的功能；
+函数适配器：通过转换或者修改其他函数对象使其功能得到扩展。这一类适配器有否定器（相当于"非"操作）、帮定器、函数指针适配器。

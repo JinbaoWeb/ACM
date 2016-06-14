@@ -1,0 +1,27 @@
+4
+begin
+class Sub:Super
+class Super
+class Sub:Super
+end
+
+begin
+class Class
+call Class.Method
+def Class.Method
+call Class.Method
+end
+
+begin
+class Super
+class Sub:Super
+def Super.Method
+call Sub.Method
+end
+
+begin
+class Super
+class Sub:Super
+class Sub2:Sub
+def Super.Method
+call Sub2.Method

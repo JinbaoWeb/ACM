@@ -1,0 +1,51 @@
+/*******************************************************************************
+ * Author :          jinbao
+ * Email :           dongjinbao913106840144@gmail.com
+ * Last modified :   2015-05-02 15:43
+ * Filename :        201505021543.cpp
+ * Description :     
+ * *****************************************************************************/
+#include <iostream>
+using namespace std;
+typedef long long ll;
+#define mod 4294967296
+struct point{
+	unsigned int l,r;
+}a[10000001];
+int main(){
+	ll t,n,l,r,aa,b,c,d;
+	cin>>t;
+	while (t--){
+		cin>>n>>l>>r>>aa>>b>>c>>d;
+		ll min=r,max=l;
+		a[0].l=l,a[0].r=r;
+		for (ll i=1;i<n;i++){
+			ll l2=(a[i-1].l*aa+b)%mod,r2=(a[i-1].r*c+d)%mod;
+			if (l2>r2){
+				ll temp=l2;
+				l2=r2;
+				r2=temp;
+			}
+			a[i].l=l2;
+			a[i].r=r2;
+			if (max<a[i].l)
+				max=a[i].l;
+			if (min>a[i].r)
+				min=a[i].r;
+		}
+		int flag=0;
+		for (ll i=0;i<n;i++){
+			if (a[i].l>min && a[i].r<max){
+				flag=1;
+				break;
+			}
+		}
+		if (flag==1)
+			cout<<"YES"<<endl;
+		else
+			cout<<"NO"<<endl;
+	}
+
+	return 0;
+}
+

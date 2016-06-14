@@ -1,0 +1,624 @@
+﻿#数论#
+
+*MADE BY [BAILEYS WU](http://www.baileyswu.com)*
+
+标签： 数学
+***
+
+##整除与剩余
+**整除**在自然数范围内的引入是十分自然的，即要把一个整体平均分为若干份。若要求分得的结果必须是整数，则可能存在多余的情况，即余数。
+> $若a能整除b，可记作：a\mid b，否则a\nmid b$
+
+整数是对自然数的扩充，引入了负数的概念。负的余数是一个数学概念，在实际情形中说剩余的东西是负数，往往是可笑的。因为那意味着并没有剩余。利用同余，可以给出这类情况的意义。
+
+整除判断多利用代数恒等变形，可尝试证明如下两题：
+1. 设$a>1, m, n>0$, 证明：$(a^m-1,a^n-1)=a^{(m,n)}-1.$
+2. 设$a>b, gcd(a, b)=1$, 证明：$(a^m-b^m,a^n-b^n)=a^{(m,n)
+}-b^{(m,n)}.$
+
+**同余**，即除同一个数得到相同的余数。例如$8=1*5+3，13=2*5+3$，可知8，13关于5同余，一般可以记作：$8\equiv 13 \pmod 5$
+> 若a和b模d同余，则下列命题等价：
+$$a和b模d同余 \Leftrightarrow 存在整数n，使得a = b+nd \Leftrightarrow d\mid (a-b)$$
+
+当a是一个负数时，则将n置为负数。
+
+几个看两眼的定理：
+> * 若$a \equiv b \pmod m 且d\mid m,则a \equiv b \pmod d$；
+> * 若$a \equiv b \pmod m,则(a,m)=(b,m)$(辗转相除法)；
+> * $\forall 1\leq i\leq n,a \equiv b \pmod{m_i}\Leftrightarrow a\equiv b\pmod {[m_1,m_2,...,m_n]}$
+> * 若$ac\equiv bc \pmod m,且(c,m)=d,则a\equiv b \pmod {{m\over d}}$
+
+对于相同的模，同余式可以加、减、乘，可以通过上述等价的命题快速证明。在计算整数幂的同余式时可以根据乘法性质对小指数的先进行模运算，再代回原式，可以减小一定的计算量。例如计算$2^{2015}模13$，可以先得到
+$$2^4\equiv 16\equiv 3\pmod {13}$$$$2^8\equiv 3^2\equiv 9\equiv -4\pmod {13}$$$$2^{12}\equiv -12\equiv 1\pmod {13}$$$$2^{2015}\equiv 2^{11}\equiv -4*8\equiv -32\equiv 7\pmod {13}$$
+有些题目答案过大时，往往要求输出mod一个大数N的答案。可以在中间过程中先mod N，避免超int。
+
+某些数被模除时具有特别的性质，下面[看一道自己出的题](http://njoj.org/Contest/183/G/)：
+题目大意：从$数字n到数字m(1\leq n\leq m\leq 10^8)$之间有多少个数满足奇数位上的数字之和减去偶数位上的数字之和为2。
+由于数据范围不大，可以暴力试试看。机智的会用数位DP。而出题人其实是从数论的角度出发的。已知：
+$$10^{2k}\equiv 100^k\equiv (9*11+1)^k\equiv 1\pmod {11}$$$$10^{2k+1}\equiv 100^k*10\equiv 10\equiv -1\pmod{11}$$
+对于任意的正整数 $N=\overline {a_{2n} a_{2n-1}…a_2 a_1} (a_{2n}与a_{2n-1}至少有一个不为0）$，并且设x = 奇数位之和-偶数位之和，则原正整数都可拆解为：$$\overline{a_{2n} a_{2n-1}...a_2 a_1}=\sum_{i=1}^{2n} a_i·10^i=\sum_{i=1}^n a_{2i-1}·10^{2i-1}+\sum_{i=1}^n a_{2i}·10^{2i}$$$$\equiv \sum_{i=1}^n a_{2i-1}·1+\sum_{i=1}^n a_{2i}·(-1)\equiv x\equiv d\pmod {11}$$现在要求x=2,则d=2，则$N\equiv d\equiv 2\pmod {11}$,可知满足题意的数都有这个性质，再进行判断。但要注意的是d=2时，x不一定等于2，比如13，-9等都能得到d=2. 因此对于mod 11为2的数中仍要进行筛查。
+***
+##素数问题
+
+###基本描述
+素数仅能被1和自身整除（除1外），可以看作是组成整数的基本单位。
+要知道一个整数的阶乘能被素数p整除多少次，即p的幂为多少次，可利用：$$[{n\over p}]+[{n\over p^2}]+[{n\over p^3}]+...+[{n\over p^t}]$$
+其中$t=log_pn.$
+> **素数定理**：定义$\pi(x)$为1~x内素数的个数（即欧拉函数），则：$$lim_{x\to \infty} {\pi(x)\over{x\over ln(x)}}=1\Leftrightarrow x\to \infty 时，\pi(x) \sim {x\over ln(x)}$$
+
+由此可以估算出在1~x范围内素数的个数。
+
+素数的形成没有成型的规律，但有许多相关的猜想。
+
+ - 伯特兰猜想：$\forall n>1, \exists 素数p, s.t. n<p<2n $
+ - 孪生素数：存在无穷多素数对p，p+2.
+ - 哥德巴赫猜想：任何偶数都可以拆分成两个素数的和。
+ - 构造猜想：存在无穷多个素数满足$p=n^2+1$
+
+
+###素数筛法
+
+- 埃拉托斯尼斯筛法
+先将2~N内所有的数标记为素数，从最小的素数开始筛去其倍数，再找到下一个素数，依次筛去非素数的数，剩余的即为素数。
+需要筛的素数范围只需在2~$\sqrt N$.
+```cpp
+int num[N] = {0,0,1}, prime[N] = {2}, pr = 1;
+void set()
+{
+	for(int i = 2;i < N;i++)
+		num[i] = 1;
+	for(int i = 2;i <= sqrt((double)N);i++)
+	    if(num[i]) for(int j = i*i;j < N;j += i)
+			num[j] = 0;
+	for(int i = 3;i < N;i += 2)
+		if(num[i])
+			prime[pr++] = i;
+};
+```
+在[POJ 2689](http://njoj.org/Problem/Pku/2689/)，可以节省空间大小。
+
+- 6N$\pm$1筛法
+由于6N，6N+2，6N+3，6N+4（N>0）均不是素数，故在筛素数时可以直接从6N$\pm$1中判断和筛选素数。
+
+###素数判定
+
+- 朴素的暴力判断算法$O(\sqrt n)$
+	从0~$\sqrt n$依次尝试能否整除
+- 素数筛法后直接判定$O(1)$
+- Lucas-Lehmer判定法（只对梅森数[^meison]作用）
+设p是素数，第p个梅森数为$M_p=2^p-1，r_1=4.$$对于k\ge 2, r_k\equiv {r_{k-1}}^2-2 \pmod {M_p}, (0\leq r_k<M_p)$,得到序列{$r_k$}
+$$M_p是素数~\Leftrightarrow~r_{p-1}\equiv 0\pmod{M_p}$$
+- Miller-Robin测试
+判断n是否为素数
+    - 由[费马小定理](#fermat)，取与n互质的a作为底数，验证$a^{n-1}\equiv 1\pmod n$是否成立。
+    - 当上式成立时，n是基于a的伪素数。
+    - 多取几个小于n的不同的a，反复验证，若都成立，则认为n是素数。取5次即可保证比较高的正确率。
+    - 不适用范围：卡麦克尔数[^maker]。
+- 二次探测
+    对卡麦尔数（伪素数）进行测试
+
+> 二次探测定理：对素数$p,满足x^2\equiv 1\pmod p$的小于p的正整数解$x只有1或p-1$.
+
+对n-1除2，检验$a^{n-1\over 2}\equiv 1~or~n-1\pmod n$是否成立,一旦不成立则可认定n不是素数。反复除2直到除不尽为止。
+```cpp
+//从n-1的最大奇因子为指数开始判定
+bool recheck(LL a, LL n, LL m, LL j)
+{
+    LL d = po(a, m, n);//对大数运算时里面的乘法要另外算mult_mod
+    if(d == 1 || d == n-1)
+        return true;
+    for(int i = 0;i < j;i++)
+    {
+        d = d*d % n;
+        if(d == 1 || d == n-1)
+            return true;
+    }
+    return false;
+}
+bool Miller_Rabin(LL n)
+{
+    if( n < 2)return false;
+    if( n == 2)return true;
+    if( (n&1LL) == 0)return false;//偶数
+    srand((unsigned) time (NULL));
+    LL m = n-1, j = 0;
+    while( !(m & 1LL) )
+    {
+        m >>= 1;
+        j++;
+    }
+    for(int i = 0;i < 5;i++)
+    {
+        LL a  = rand()%(n-2) + 2;
+        if( !recheck(a,n,m,j) )
+            return false;
+    }
+    return true;
+}
+```
+###剩余系配对
+
+素数p的完全剩余系为0~p-1，其中$1^2\equiv (p-1)^2\equiv 1\pmod p
+$，其他的数2,3,...,p-2可以两两配对$(i,j)$，满足$ij\equiv 1\pmod p$.可以先从中任取一个数a,方程$ax\equiv 1\pmod p$必有唯一解。
+***
+##整数分解
+将整数化为质因子的幂的乘积的唯一形式。常用试除法、筛选法，比较简单不举例了。对于非常大的数而言，两者用处不大。
+
+###Pollard $\rho$ 整数分解法
+原理还不太懂：
+    1. 生成两个整数a、b，计算p=(a-b,n)，直到p不为1或a,b出现循环为止。
+    2. 若p=n，则n为质数；否则为n的一个约数。
+
+分解n的具体步骤如下：
+    1. 选取一个小的随机数$x_1$，迭代生成$x_i=x_{i-1}^2+k$，取k=1，若序列出现循环则退出。
+    2. 计算$p=gcd(x_{i-1}-x_i,n)$直到p>1,否则返回上一步。
+    3. 若p=n,则n为素数。否则p为n的约数，继续分解p和n/p
+    
+```cpp
+//找出一个因子
+LL pollard_rho(LL x,LL c)
+{
+	LL i = 1, k = 2;
+	srand(time(NULL));
+	LL x0 = rand()%(x-1) + 1;
+	LL y = x0;
+	while(1)
+	{
+		i++;
+		x0 = (mult_mod(x0,x0,x) + c)%x;//迭代公式为(x0*x0+c)%x
+		LL d = gcd(y - x0,x);//gcd返回一个绝对值
+		if( d != 1 && d != x)
+			return d;
+		if(y == x0)
+			return x;
+		if(i == k)
+		{
+			y = x0;
+			k += k;
+		}
+	}
+}
+
+//对n进行素因子分解，存入factor. k设置为107左右即可
+void findfac(LL n,int k)
+{
+	if(n == 1)
+		return;
+	if(Miller_Rabin(n))
+	{
+		factor[tol++] = n;
+		return;
+	}
+	LL p = n;
+	int c = k;
+	while( p >= n)
+		p = pollard_rho(p,c--);//c即k表示最大搜索次数？
+	//值变化，防止死循环k
+	findfac(p,k);
+	findfac(n/p,k);
+}
+```
+[如POJ 1811](http://njoj.org/Problem/Pku/1811/) [1061](http://njoj.org/Problem/Pku/2429/)
+***
+##扩展欧几里得
+**辗转相除法**可以来求a，b两个数的最大公约数。而辗转相除的过程中，附带也可以得到满足$ax+by=c(△)$的解系$(X,Y)$
+
+先来解决$ax + by = gcd(a, b)(*)$这一特殊情况。
+
+1. 最简情况：$b=0$时，$gcd(a,b)=a$，方程化为$ax=a$,则一组特殊解为$(1,0)$
+2. 当$b≠0$时，由辗转相除法$$gcd(a, b) = gcd(b,a\%b)$$可以改写原方程得到
+$$bx’ +(a\%b)y’ = gcd(b, a\%b)$$又$a\%b=a-⌊\frac{a} {b}⌋×b$，代入前一方程，得到
+$$ay’+b(x’-⌊{a\over b}⌋y’)=gcd(a,b)$$与方程(*)对比$ax+by=gcd(a,b)$，可知：$x = y’，y = (x’-⌊{a\over b}⌋y’)$得到一组递推关系。
+3. 方程依次向下递归可以得到最简情况，得到解（1，0），再由递推关系回代到上一组解，最终可以得到方程（*）的解。 **注意到，这是一组特解，并不唯一。**
+```cpp
+//解方程ax+by=gcd(a,b) 返回gcd(a,b) 得到一组特解(x,y)
+int extend_Euclid(int a, int b, int &x, int &y){
+	if(b==0){
+	x = 1; y = 0;
+	return a;
+	}
+	int r = extend_Euclid(b, a%b, y, x);
+	y -= a/b*x;
+	return r;
+}
+```
+* 回到方程$(△)$首先，判断$gcd(a, b)$是否是c的约数。若非，则方程无解。
+
+* 下面考虑 $gcd(a, b)\mid c$，则方程有解。
+由扩展欧几里得算法算出方程$ax + by = gcd(a, b)$的特解$(x_0，y_0)$
+原方程$(△)$的特解$(X_0，Y_0)=(x_0, y_0)·{c\over gcd(a, b)}$
+为保证整数解则$\Delta Y={a\Delta X\over b}\in \mathbb Z,则\Delta X={b \over gcd(a,b)}$
+原方程$(△)$的<span id = "set">解系</span>为$\begin{cases}
+X = X_0 + {b\over gcd(a, b)}·K \\[2ex]
+Y = Y_0 - {a\over gcd(a, b)}·K
+\end{cases}K为任意整数$。
+
+* 令$K从0取到[gcd(a,b)-1]$,求出方程所有解中的代表元素共有$gcd(a,b)$个。是X模b意义下的所有解。其中最小非负整数解$x_1=(x_0\cdot {c\over gcd(a, b)}\%ran+ran)\%ran,其中ran={b \over gcd(a,b)}$（在模ran范围内有唯一的解）$x_1$是模ran范围内最小的正整数解，又$ran \mid b则必是模b$范围内最小的正整数解。
+
+* **注意：解系中解的间隔与c无关。**也可以从坐标系上的直线看出来。直线与网格的交点为一组整数解，c只决定了直线的平移位置，a，b决定了斜率。
+
+> 拉梅定理：用欧几里得算法计算两个正整数的最大公因子时，所需的除法次数不会超过两个整数中较小的那个十进制数的位数的5倍。
+    
+推论：求两个正整数$a,b,a>b$的最大公因子需要$O(log_2a)^3$次的位运算。
+
+**扩展欧几里得的应用**
+主要有：求解不定方程、模的逆元、同余方程。[如POJ 1061](http://njoj.org/Problem/Pku/1061/)，只要化为$ax+by=c$的形式即可求解。
+***
+###解二元一次线性方程
+**注意：为保证gcd(a,b)为正，要让a，b均为正，避免错误，此时解应该反号。**
+```cpp
+//求解ax+by=c 返回0为无解,否则返回gcd(a,b)个解,用X[],Y[]存;
+int X[N], Y[N];
+int equation(int a, int b, int c)
+{
+	int x, y;
+	int g = extend_Euclid(a, b, x, y);
+	if(c % g)
+		return 0;    //表示无解
+	x *= c/g, y *= c/g;
+	for(int k = 0;k < g;k++)
+	{
+		X[k] = (x+b/g*k)%b;
+		Y[k] = (c-a*X[k])/b;
+	}
+	return g;
+}
+```
+***
+###解一元线性同余方程
+> $Thm$ 对于方程$ax\equiv b \pmod m$,其中$a,b,m\in \mathbb Z ~and~m>0,(a,m)=d.如果d \mid b,$则方程恰有d个模m不同余的解。否则方程无解。
+
+容易发现，方程$ax\equiv b \pmod m$可以写为方程$ax+my=b$的形式，则利用前面得到的结论就很容易理解了。
+```cpp
+//求解ax=b(mod m) 返回0为无解，否则返回gcd(a,m)个mod m意义下的解,用X[]存
+int mod(int a, int b, int m)
+{
+	return equation(a, m, b);
+}
+```
+***
+###求逆元
+特别地，当有$(a,m)=1时，ax\equiv 1 \pmod m$得到的x即是a模m的逆。
+***
+###解一元线性同余方程组
+当有方程组
+\begin{cases}
+x\equiv b_1 \pmod {m_1} \\
+x\equiv b_2 \pmod {m_2} \\...\\
+x\equiv b_n \pmod {m_n}
+\end{cases}可知每个方程必有满足的一个特解，并存在模$m_i$的解系
+\begin{cases}
+x=b_1+m_1y_1 \\
+x=b_2+m_2y_2
+\end{cases}相减后得到：
+$$m_1y_1-m_2y_2=b_2-b_1$$化为二元一次线性方程，得到特解$y_{01}$,再化为模$lcm(m_1,m_2)$意义下的特解(保证了在原来两个方程的解系中)，代入到第一个方程，则两个方程等价为$$x\equiv b_1+m_1y_{10} \pmod {lcm(m_1,m_2)}$$再继续进行两两运算，直至最后得到满足的答案。
+```cpp
+//在模m范围内只有可能有一个解或无解 要求最小整数解时equation()内只需保存一个解代回
+LL X[N], Y[N];
+int equation(int a, int b, int c)
+{
+	int x, y;
+	int g = extend_Euclid(a, b, x, y);
+	if(c % g)
+		return 0;    //表示无解
+	int ran = b/g;
+	X[0] = (c/g*x%ran+ran)%ran;    //只需存最小整数解
+	return g;
+}
+int mo[N], bo[N];
+int eq_set()
+{
+	int n, b1, m1, b2, m2, m, r = 1;
+	scanf("%lld", &n);
+	for(int i = 0;i < n;i++)
+		scanf("%lld", &mo[i]);
+	for(int i = 0;i < n;i++)
+		scanf("%lld", &bo[i]);
+	m1 = mo[0], b1 = bo[0];
+	for(int i = 1;i < n;i++)
+	{
+		m2 = mo[i], b2 = bo[i];
+		r = equation(m1, m2, b2-b1);
+		if(!r)
+			return -1;  //返回无解
+		b1 += m1*X[0];
+		m1 *= m2/r;
+		b1 %= m1;
+	}
+	return (b1%m1+m1-1)%m1+1; //返回正整数解，0被化为最小公倍数
+}
+```
+[如POJ 1006](http://njoj.org/Problem/Pku/1006/)，由题意可列出满足的方程组，再求出相应的答案。当结果为非正数时利用同余性质化为正数。
+***
+###中国剩余定理
+
+> $Thm ~若m_1,m_2,...,m_r$是两两互素的正整数，则同余方程组（同上面的解一元线性同余方程组），$x\equiv a_i\pmod {m_i}$有模$M=m_1m_2...m_n$的唯一解。
+
+令$N_i={M \over m_i},则(N_i,m_i)=1,故存在x_i,满足$$N_ix_i+m_iy_i=1,即N_ix_i\equiv 1\pmod {m_i}$，易得$$\sum_{i=1}^r a_iN_ix_i\equiv a_i\pmod {m_i}$$即左式为方程组的解。
+
+```cpp
+//解方程组x=ai(mod mi) mi之间两两互质
+int China(int r)
+{
+	int M = 1, ans = 0;
+	for (int i = 0; i < r; ++i)
+		M *= m[i];
+	for(int i = 0;i < r;i++)
+	{
+		int N = M/m[i];
+		int x, y;
+		extend_Euclid(N, m[i], x, y);
+		ans = (ans+a[i]*N*x)%M;
+	}
+	ans = (ans - a[r])%M;
+	return (ans+M)%M;
+}
+```
+***
+###解多元线性同余方程
+> $Thm$ 多元线性同余方程$a_1x_1+a_2x_2+...+a_nx_n+b\equiv 0\pmod m$有解$\Leftrightarrow (a_1,a_2,...,a_n,m)\mid b$
+若有解，则解（模m的剩余类）的个数为$m^{n-1}(a_1,a_2,...,a_n,m)$
+
+令$d_1=(a_1,a_2,...,a_{n-1},m), d =(a_1,a_2,...,a_{n-1},a_n,m),$$则d=(d_1,a_n)且d_1\mid m$,由同余性质，可得$$a_1x_1+a_2x_2+...+a_{n-1}x_{n-1}+a_nx_n+b\equiv 0\pmod {d_1}$$又$d_1\mid a_1x_1+a_2x_2+...+a_{n-1}x_{n-1}$,所以$$a_nx_n+b\equiv 0\pmod {d_1}$$设$a_nx_n+b=b_1d_1$，代入原方程，得$$a_1x_1+a_2x_2+...+a_{n-1}x_{n-1}+b_1d_1\equiv 0\pmod m$$原方程可依次消元并解出所有解。
+***
+###解高次同余方程
+仅讨论$A^x\equiv B\pmod C$的情况。
+
+当A与C互质时，由[费马小定理](#fermat)，$A^{C-1}\equiv 1\pmod C 且 A^0\equiv 1\pmod C$则可得解的循环节小于C。因此，若选择暴力，则直接令x从0~C-1变化，检验其是否是方程的解。当C比较大时，则采用BSGS算法。
+
+ - [BSGS](http://www.cnblogs.com/yuiffy/p/3877381.html?utm_source=tuicool)(Baby Step Giant Step)算法
+
+    - 先把$x=i\times m+j，其中m=ceil(\sqrt C)$这样原式就变为$A^{im+j}\equiv B\pmod C$再变为$A^j\equiv B·A^{-mi} \pmod C$
+    - 先循环$j=0\to (m-1)$，把$(A^j\%C,j)$加入hash表中，这个就是Baby Steps
+    - 然后我们再枚举等号右边$B·A^{-mi} \pmod C$，（这就是Giant Step）,从hash表中找看看有没有，有的话就得到了一组$(i,j)$，`x=i*m+j`，得到的这个就是正确解
+```cpp
+//A^X=B(mod C)求X C为整数
+#define MOD 76543
+int hs[MOD],head[MOD],next[MOD],id[MOD],top;
+void insert(int x, int y)
+{
+	int k = x%MOD;
+	hs[top] = x, id[top] = y, next[top] = head[k], head[k] = top++;
+}
+int find(int x)
+{
+	int k = x%MOD;
+	for(int i = head[k]; i != -1; i = next[i])
+		if(hs[i] == x)
+			return id[i];
+	return -1;
+}
+int BSGS(int a,int b,int c)
+{
+	memset(head, -1, sizeof(head));
+	top = 1;
+	if(b == 1)
+		return 0;
+	int m = sqrt(c*1.0), j;
+	long long x = 1, p = 1;
+	for(int i = 0; i < m; ++i, p = p*a%c)
+		insert(p*b%c, i);//存的是(a^j*b, j)
+	for(long long i = m; ;i += m)
+	{
+		if( (j = find(x = x*p%c)) != -1 )
+			return i-j;  //a^(ms-j)=b(mod c)
+		if(i > c)
+			break;
+	}
+	return -1;
+}
+```
+
+当A与C不互质时，先进行消因子处理再进行BSGS算法求解。
+
+- 扩展BSGS算法
+
+    - 原式等价为$A^x+Cy=B$，消因子处理，使得方程化为$aA^z+C'y=B'$满足$C'与A$不再有可以约的因子,$cnt=x-z$。每次消因子过程中，方程右边也同时消去一样的因子。若不能，则说明方程不可解。将$A^z$作为一个整体，利用扩展欧几里得算法得到其[解系](#set)。假设出来的一组原始特解为$x_0$，则$A^z=x_0B'+KC',K$为任意整数。
+    
+    - 化为高次同余方程$A^z\equiv x_0B'\pmod {C'}$利用BSGS求解得到$z_0，加回cnt$即为原方程的解。
+    
+    - 注意：这样得到的只有不大于cnt的解。可能会漏掉小于cnt的解。因此先从1~log(MaxN)(一般设定为50即可)暴力查找一遍。
+
+```cpp
+LL xiao(LL &a, LL &b, LL &c)
+{
+	LL r = 0, d, x, y, a1 = 1;
+	while((d = extend_Euclid(a, c, x, y)) != 1)
+	{
+		if(b % d)
+			return -1;
+		c /= d;
+		b /= d;
+		a1 = a1*(a/d)%c;
+		r++;
+	}
+	if(r == 0)
+		return 0;
+	extend_Euclid(a1, c, x, y);
+	b = (b*x%c+c)%c;
+	return r;
+}
+LL extend_BSGS(LL a,LL b,LL c)
+{
+	a %= c;   //简化运算
+	LL r = 1;
+	for(int i = 0;i < 50;i++)
+	{
+		if((r-b) % c == 0)
+			return i;
+		r *= a; r %= c;
+	}
+	memset(head, -1, sizeof(head));
+	LL cnt = xiao(a, b, c);
+	if(cnt == -1)
+		return -1;
+	top = 1;
+	if(b == 1)
+		return cnt;
+	LL m = ceil(sqrt(c*1.0)), j;
+	LL x = 1, p = 1;
+	for(LL i = 0; i < m; ++i, p = p*a%c)
+		insert(p*b%c, i);
+	for(LL i = m; ;i += m)
+	{
+		if( (j = find(x = x*p%c)) != -1 )
+			return i-j+cnt;
+		if(i > c)
+			break;
+	}
+	return -1;
+}
+```
+***
+##几类不定方程
+###毕达哥拉斯三元组
+满足方程$x^2+y^2=z^2$的三元组$(x,y,z)$为毕达哥拉斯三元组。当$gcd(x,y,z)=1$时，称其为本原的。
+
+> $Thm~x,y,z$$构成本原毕达哥拉斯三元组$$(y为偶数)\Leftrightarrow \exists $互素的正整数$m,n(m>n分别为一奇一偶)$且满足$$\begin{cases}
+x=m^2-n^2 \\
+y=2mn \\
+z=m^2+n^2
+\end{cases}$$
+
+很容易证明后者的充分性。在《什么是数学》[^what]书中证明了其必要性。从后者可以看出，本原毕达哥拉斯三元组中的最大数一定是奇数。
+特别地，有$f_nf_{n+3},~2f_{n+1}f_{n+2},~f_{n+1}^2+f_{n+2}^2$构成毕达哥拉斯三元组。将$f_n=f_{n+2}-f_{n+1},~f_{n+3}=f_{n+2}+f_{n+1}$即得。
+如[POJ1305](http://njoj.org/Problem/Pku/1305/)
+```cpp
+//求解n以内本原的毕达哥拉斯三元组有多少个
+int Bida(int n)
+{
+	int m = floor(sqrt(n)+1e-6), r = 0;
+	for(int i = 2;i < m;i++)
+	{
+		for(int j = 1;j < i;j++)
+		{
+			if((i-j) % 2==0 || gcd(i,j) != 1)//i,j要互质
+				continue;
+			int x = i*i-j*j, y = 2*i*j, z = i*i+j*j;
+			if(z > n)
+				continue;
+			r++;
+		}
+	}
+	return r;
+}
+```
+***
+###佩尔方程
+形如整数方程$$x^2-dy^2=1$$其中d大于1且不为完全平方数。（当d为完全平方数时显然无解）
+
+
+**迭代公式**
+$Def~设r，s$为整数，并且满足$r^2-Ns^2=T$，则称$a=r-s\sqrt N$给出该方程的解。
+> $Thm~设a=x_1-y_1\sqrt N,b=x_2-y_2\sqrt N$给出方程$x^2-Ny^2=T$的解，则$ab=A-B\sqrt N$给出方程$x^2-Ny^2=T^2$的解。其中\begin{cases}
+A=x_1x_2+Ny_1y_2\\
+B=x_1y_2+x_2y_1
+\end{cases}
+
+取T=1，若最小特解为$(x_1,y_1)$,则有迭代公式
+\begin{cases}
+x_n=x_{n-1}x_1+dy_{n-1}y_1\\
+y_n=x_{n-1}y_1+y_{n-1}x_1
+\end{cases}可写为矩阵$$
+\begin{pmatrix}x_n\\y_n
+\end{pmatrix}=
+\begin{pmatrix}x_1&dy_1\\y_1&x_1
+\end{pmatrix}^{n-1}
+\begin{pmatrix}x_1\\y_1
+\end{pmatrix}
+$$利用快速幂也可快速求解。
+
+**求最小特解**
+
+- 暴力枚举
+- 连分数法（待补坑）
+
+```cpp
+\\正整数方程x^2-dy^2=1,已知最小的特解x1,y1,求之后的每组解
+#define N 100000
+int X[N]={x1}, Y[N]={y1}, cnt;
+int peir(int x1, int y1, int d, int n)
+{
+	cnt = 1;
+	int x2 = x1, y2 = y1, x3, y3;
+	for(int i = 1;i <= 10;i++)
+	{
+		x3 = x2*x1+d*y2*y1;
+		y3 = x2*y1+y2*x1;
+		x2 = x3, y2 = y3;
+		X[cnt] = x3; y[cnt++] = y3;
+	}
+	return 0;
+}
+```
+```cpp
+\\正整数方程x^2-dy^2=1,已知最小的特解x1,y1,求第n个解
+void peir(int x1, int y1, int d, int n)
+{
+	int a[2][2] = {x1, d*y1, y1, x1};
+	int b[2][2] = {x1, 0, y1, 0};
+	A.set(a, 2, 2);
+	B.set(b, 2, 1);
+	C = po(A, n-1)*B;
+	printf("%d %d\n", C.a[0][0], C.a[1][0]);
+}
+```
+***
+##同余式定理
+###<span id = "fermat">费马小定理</span>
+> $Thm：若素数p满足p\nmid a，则a^{p-1}\equiv 1\pmod p$
+
+利用构造法可以证明定理成立。
+
+比较常用的做法是把除法转换成乘法$$a^{p-2}\equiv {1\over a}\pmod p \Rightarrow {b\over a}≡b·a^{p-2} \pmod p$$可由快速幂得到结果。为了调用方便，可以预处理数组，之后直接调用。
+可以试试做[HDU 4869](http://njoj.org/Problem/Hdu/4869/)。相似的还有[特别的斐波那契数列 HDU 4549](http://njoj.org/Problem/Hdu/4549/)
+当斐波那契数列的递推公式由加号改为乘号时，设$$F(0)=a,F(1)=b,F(n+2)=F(n+1)\times F(n)$$则a,b的指数分别是前两项为{1,0} {0,1}的斐波那契数列。要求第n项模一个大数（*给定的是一个质数*）的值。当指数很大时，可以用费马小定理降低指数。
+***
+###威尔逊定理
+> $Thm~ 若p是素数，则(p-1)!\equiv -1\pmod p$
+
+主要是证明在$2,3,...,p-2$中间存在两两的逆元对$(x_1,y_1)(x_1\ne y_1)$，使得$x_1y_1\equiv 1\pmod 1$,最后剩余的是$1,p-1$，则显然阶乘模$p得到p-1$
+
+###欧拉定理
+> $Thm~设m是一个正整数，a是一个整数，(a,m)=1，$$则a^{\phi(x)}\equiv 1\pmod m$
+
+特别的
+> $若(a,b)=1,a,b为正整数,则a^{\phi(b)}+b^{\phi(a)}\equiv 1\pmod{ab}$
+
+***
+##欧拉函数
+$\phi(x)$表示从1到x中与x互质的数的个数。
+$$n=p_1^{a_1}p_2^{a_2}...p_n^{a_n}$$$$\phi (n)=n(1-{1\over p_1})(1-{1\over p_2})...(1-{1\over p_n})$$
+
+```cpp
+void genPhi()
+{
+	for(int i = 1;i < max;i++)
+		minDiv[i] = i;
+	for(int i = 2;i*i < max;i++)
+	{
+		if(minDiv[i] == i)
+		{
+			for(int j = i*i;j < max;j += i)
+				minDiv[j] = i;
+		}
+	}
+	phi[1] = 1;
+	for(int i = 2;i < max;i++)
+	{
+		phi[i] = phi[i/minDiv[i]];
+		if((i/minDiv[i]) % minDiv[i] == 0)
+			phi[i] *= minDiv[i];
+		else
+			phi[i] *= minDiv[i] - 1;
+	}
+}
+```
+
+
+
+[^meison]: $M_p=2^p-1$为第p个梅森数。若$M_p$为素数，则p必为素数，反之不成立。
+
+[^what]:【美】R.科朗 著 第一章补充第三节
+
+[^maker]: 对于一个非素数n，任意一个小于n并与它互质的数a，$a^{n-1}\equiv n\pmod 1 都成立$ 

@@ -1,0 +1,43 @@
+void swap(int &x,int &y)
+{
+	int temp=x;
+	x=y;
+	y=temp;
+}
+void SiftDown(int a[],int x,int n)
+{
+	if (2*x>n) return;
+	while (2*x+1<=n)
+	{
+		int left=2*x,right=left+1,index=x,max=a[x];//left:左子节点 right：右字节点 index：最大值的下标 max：最大值
+		if (a[left]>max)
+			index=left,max=a[left];
+		if (a[right]<max)
+			index=right,max=a[right];
+		if (index==x) break;
+		swap(a[x],a[index]);
+		x=index;
+	}
+}
+void SiftUp(int a[],int x,int n)
+{
+	if (x==1) return;
+	while (x>1)
+	{
+		int parent=x/2;
+		if (a[x]>a[parent])
+		{
+			swap(a[x],a[parent]);
+			x=parent;
+		}
+		else
+			break;
+	}
+}
+void BuildHeap(int a[],int n)	//将数组a[1...n]转换为堆
+{
+	for (int i=n/2;i>0;i--)
+		SiftDown(a,i,n);
+	for (int i=n/2;i<=n;i++)
+		SiftUp(a,i,n);
+}

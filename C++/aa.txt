@@ -1,0 +1,24 @@
+oops!
+class Super
+class Sub:Super
+
+class Class
+1 0
+oops!
+def Class.Method
+1 1
+invoke Class.Method
+
+class Super
+class Sub:Super
+def Super.Method
+1 1
+invoke Super.Method
+
+class Super
+class Sub:Super
+class Sub2:Sub
+def Super.Method
+1 1
+invoke Super.Method
+

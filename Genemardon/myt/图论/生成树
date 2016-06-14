@@ -1,0 +1,68 @@
+//prim
+
+int n,m,ans;
+int tab[110][110];
+int vis[110],dis[110];
+void prim()
+{
+	ans=0;
+	for (int i=1;i<=n;i++) dis[i]=inf;
+	memset(vis,0,sizeof(vis));
+	dis[1]=0;
+	for (int i=1;i<=n;i++)
+	{
+		int MIN=inf,pos;
+		for (int j=1;j<=n;j++) if (!vis[j] && dis[j]<MIN)
+		{
+			MIN=dis[j];
+			pos=j;
+		}
+		vis[pos]=1;
+		ans+=MIN;
+		for (int j=1;j<=n;j++) if (!vis[j] && dis[j]>tab[j][pos]) dis[j]=tab[j][pos];
+	}
+}
+
+
+//heap prim
+//和dijstra的堆优化很相似，用priority_queue，好些的很。
+
+//Kruskal
+
+struct note
+{
+	int u,v,w;
+	note () {}
+	note (int u,int v,int w) : u(u),v(v),w(w) {}
+	bool operator<(const note &a)const
+	{
+		return w<a.w;
+	}
+}p[1000];
+int n,m,M,ans;
+int fa[100];
+char str[10];
+int find(int x)
+{
+	if (x==fa[x]) return x;
+	fa[x]=find(fa[x]);
+	return fa[x];
+}
+void Union(int a,int b)
+{
+	int A=find(a),B=find(b);
+	fa[A]=B;
+}
+void kruskal()
+{
+	sort(p,p+M);
+	int cnt=0;ans=0;
+	for (int i=1;i<=n;i++) fa[i]=i;
+	for (int i=0;i<M;i++) if (find(p[i].u) != find(p[i].v))
+	{
+		Union(p[i].u,p[i].v);
+		ans+=p[i].w;
+		cnt++;
+		if (cnt==n-1) break;
+	}
+}

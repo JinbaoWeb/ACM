@@ -1,0 +1,45 @@
+/*******************************************************************************
+ * Author :          jinbao
+ * Email :           dongjinbao913106840144@gmail.com
+ * Last modified :   2015-05-16 23:51
+ * Filename :        poj1828.cpp
+ * Description :     
+ * *****************************************************************************/
+#include <iostream>
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+struct point{
+	int x,y;
+}monkey[50000+2];
+bool cmp(point a,point b){
+	if (a.x<b.x)
+		return true;
+	else{
+		if (a.x==b.x){
+			if (a.y<b.y)
+				return true;
+			return false;
+		}
+		return false;
+	}
+}
+int main(){
+	int n;
+	while (~scanf("%d",&n)){
+		for (int i=0;i<n;i++)
+			scanf("%d %d",&monkey[i].x,&monkey[i].y);
+		sort(monkey,monkey+n,cmp);
+		int ans=1;
+		int max=monkey[n-1].y;
+		for (int i=n-2;i>=0;i--){
+			if (max<monkey[i].y){
+				max=monkey[i].y;
+				ans++;
+			}
+		}
+		cout<<ans<<endl;
+	}
+
+	return 0;
+}

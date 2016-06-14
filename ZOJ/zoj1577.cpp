@@ -1,0 +1,33 @@
+#include <iostream>
+using namespace std;
+int gcd(int a,int b){
+	if(b==0)	return a;
+	return gcd(b,a%b);
+}
+int solve(int k){
+	int ans=1;
+	for (int i=2;i*i<=k;i++){
+		if (k%i==0){
+			if (gcd(k/i,i)==1)
+				ans++;
+		}
+	}
+	return ans*2;
+}
+int main(){
+	int x,y;
+	while (cin>>x>>y){
+		if (y%x!=0)
+			cout<<0<<endl;
+		else if (x==1)
+			cout<<2<<endl;
+		else if (x==y)
+			cout<<1<<endl;
+		else{
+			int k=y/x;
+			cout<<solve(k)<<endl;
+
+		}
+	}
+	return 0;
+}

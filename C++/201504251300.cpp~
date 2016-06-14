@@ -1,0 +1,39 @@
+#include <iostream>
+#include <stdio.h>
+#include <string.h>
+#include <algorithm>
+#include <math.h>
+using namespace std;
+typedef long long ll;
+int a[1005];
+int main(){
+	int t,n,x;
+	cin>>t;
+	while (t--){
+		memset(a,0,sizeof(a));
+		cin>>n;
+		while (n--){
+			cin>>x;
+			a[x]++;
+		}
+		int max=0,index=0;
+		for (int i=1;i<1004;i++){
+			if (max<a[i]){
+				max=a[i];
+				index=i;
+			}
+		}
+		int flag=0;
+		for (int i=1;i<1004;i++){
+			if (max==a[i] && index!=i){
+				cout<<"Nobody"<<endl;
+				flag=1;
+				break;
+			}
+		}
+		if (flag==0)
+			cout<<index<<endl;
+	}
+
+	return 0;
+}

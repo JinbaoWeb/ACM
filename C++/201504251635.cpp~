@@ -1,0 +1,46 @@
+#include <iostream>
+#include <stdio.h>
+#include <string.h>
+using namespace std;
+struct Node{
+	Node *lchild,*rchild;
+	int num;
+};
+void create(){
+	Node *head=new Node();
+	head->num=0;
+	head->lchild=head->rchild=NULL;
+	int n,x;
+	cin>>n;
+	while (n--){
+		cin>>x;
+		Node *p=head;
+		while (x){
+			int k=x%2;
+			x/=2;
+			if (k==0){
+				if (p->lchild==NULL){
+					Node *node=new Node();
+					node->num=0;node->lchild=node->rchild=NULL;
+					p->lchild=node;
+					p=node;
+				}
+			}
+			else{
+				if (p->rchild==NULL){
+					Node *node=new Node();
+					node->num=0;node->lchild=node->rchild=NULL;
+					p->rchild=node;
+					p=node;
+				}
+			}
+		}
+		p->num=1;
+	}
+}
+int main(){
+	Node head;
+
+
+	return 0;
+}

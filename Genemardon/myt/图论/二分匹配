@@ -1,0 +1,256 @@
+//应用：最大匹配，最小点覆盖，最小路径覆盖，最大权值匹配（也可以用费用流）
+//最小点覆盖=最大匹配
+//最小路径覆盖=V-最大匹配
+//邻接表存的二分最大匹配，匈牙利算法 O(NM)
+
+#include <stdio.h>
+#include <string.h>
+#include <algorithm>
+#define MAXN 3000
+#define MAXM 1000000
+using namespace std;
+struct edge
+{
+	int u,v;
+	edge () {}
+	edge (int u,int v) : u(u),v(v) {}
+}E[1000000];
+int head[MAXN],ne[MAXM],vis[MAXN],match[MAXN];
+int e,ans;
+void addedge(int u,int v)
+{
+	E[e]=edge(u,v);
+	ne[e]=head[u];head[u]=e++;
+}
+bool dfs(int p)
+{
+	for (int i=head[p];i+1;i=ne[i]) if (!vis[E[i].v])
+	{
+		vis[E[i].v]=1;
+		if (match[E[i].v]==-1 || dfs(match[E[i].v]))
+		{
+			match[E[i].v]=p;
+			return true;
+		}
+	}
+	return false;
+}
+int maxmatch()
+{
+	int res=0;
+	memset(match,-1,sizeof(match));
+	for (int i=0;i<c;i++)
+	{
+		memset(vis,0,sizeof(vis));
+		if (dfs(i)) res++;
+	}
+	return res;
+}
+void init()
+{
+	e=0;
+	memset(head,-1,sizeof(head));
+}
+
+
+
+//   Hopcroft-Carp算法 ,O(sqrt(N)M)
+
+#include <stdio.h>  
+#include <iostream>  
+#include <string.h>  
+#include <queue>  
+  
+const int N=1005;  
+const int INF=1<<28;  
+  
+int g[N][N];  
+int Mx[N];  
+int My[N];  
+int dx[N];  
+int dy[N];  
+bool used[N];  
+  
+int Nx,Ny,dis;  
+  
+bool searchP()  
+{  
+    dis=INF;  
+    int i,v,u;  
+    std::queue<int> Q;  
+  
+    memset(dx,-1,sizeof(dx));  
+    memset(dy,-1,sizeof(dy));  
+    for(i=0;i<Nx;i++)  
+    {  
+        if(Mx[i]==-1)  
+        {  
+            Q.push(i);  
+            dx[i]=0;  
+        }  
+    }  
+    while(!Q.empty())  
+    {  
+        u=Q.front();  
+        Q.pop();  
+        if(dx[u]>dis) break;  
+        for(v=0;v<Ny;v++)  
+        {  
+            if(g[u][v]&&dy[v]==-1)  
+            {  
+                dy[v]=dx[u]+1;  
+                if(My[v]==-1) dis=dy[v];  
+                else  
+                {  
+                    dx[My[v]]=dy[v]+1;  
+                    Q.push(My[v]);  
+                }  
+            }  
+        }  
+    }  
+    return dis!=INF;  
+}  
+  
+bool DFS(int u)  
+{  
+    int v;  
+    for(v=0;v<Ny;v++)  
+    {  
+        if(g[u][v]&&!used[v]&&dy[v]==dx[u]+1)  
+        {  
+            used[v]=true;  
+            if(My[v]!=-1&&dy[v]==dis) continue;  
+            if(My[v]==-1||DFS(My[v]))  
+            {  
+                My[v]=u;  
+                Mx[u]=v;  
+                return true;  
+            }  
+        }  
+    }  
+    return false;  
+}  
+  
+int Hungary()  
+{  
+    int u;  
+    int ret=0;  
+    memset(Mx,-1,sizeof(Mx));  
+    memset(My,-1,sizeof(My));  
+    while(searchP())  
+    {  
+        memset(used,false,sizeof(used));  
+        for(u=0;u<Nx;u++)  
+           if(Mx[u]==-1&&DFS(u))  ret++;  
+    }  
+    return ret;  
+}  
+  
+int main()  
+{  
+    int k,u,v;  
+    while(~scanf("%d",&k),k)  
+    {  
+        scanf("%d%d",&Nx,&Ny);  
+        memset(g,0,sizeof(g));  
+        Ny=Nx>Ny? Nx:Ny;  
+        while(k--)  
+        {  
+            scanf("%d%d",&u,&v);  
+            u--;v--;  
+            g[u][v]=1;  
+        }  
+        int ans=Hungary();  
+        printf("%d\n",ans);  
+    }  
+    return 0;  
+}  
+
+
+
+
+//KM最大权值匹配
+
+#include <stdio.h>
+#include <string.h>
+#include <algorithm>
+#include <vector>
+using namespace std;
+int vx[210],vy[210],slack[210],match[210],lx[210],ly[210];
+char str[210][1010];
+int dis[210][210];
+int inf=1000000009;
+int n;
+int cal(int a,int b)
+{
+	int l1=strlen(str[a]),l2=strlen(str[b]);
+	int len=min(l1,l2);
+	for (int i=0;i<len;i++) if (str[a][l1-i-1]!=str[b][i]) return i;
+	return len;
+}
+int dfs(int p)
+{
+	vx[p]=1;
+	for (int i=0;i<n;i++)
+	{
+		if (vy[i])
+			continue;
+		
+		int t=lx[p]+ly[i]-dis[p][i];
+		if (t==0)
+		{
+			vy[i]=1;
+			if (match[i]==-1 || dfs(match[i]))
+			{
+				match[i]=p;
+				return 1;
+			}
+		}
+		else
+		{
+			if (slack[i]>t) slack[i]=t;
+		}
+	}
+	return 0;
+}
+int main(int argc, char const *argv[])
+{
+	while (scanf("%d",&n) != EOF)
+	{
+		memset(match,-1,sizeof(match));
+		memset(ly,0,sizeof(ly));
+		memset(lx,0,sizeof(lx));
+		for (int i=0;i<n;i++)
+		{
+			scanf("%s",str[i]);
+		}
+		for (int i=0;i<n;i++)
+			for (int j=0;j<n;j++)
+			{
+				int score;
+				if (i==j) score=0; else score=cal(i,j);
+				dis[i][j]=score;
+				lx[i]=max(lx[i],dis[i][j]);
+			}
+		for (int i=0;i<n;i++)
+		{
+			for (int j=0;j<n;j++) slack[j]=inf;
+			while (1)
+			{
+				memset(vx,0,sizeof(vx));
+				memset(vy,0,sizeof(vy));
+				if (dfs(i))
+					break;
+				int t=inf;
+				for (int j=0;j<n;j++) if (!vy[j] && slack[j]<t) t=slack[j];
+				for (int j=0;j<n;j++) if (vx[j]) lx[j]-=t;
+				for (int j=0;j<n;j++) if (vy[j]) ly[j]+=t;else slack[j]-=t;
+			}			
+		}
+		//for (int i=0;i<n;i++) printf("%d ", match[i]);printf("\n");
+		int ans=0;
+		for (int i=0;i<n;i++) ans=ans+dis[match[i]][i];
+		printf("%d\n",ans );
+	}
+	return 0;
+}

@@ -1,0 +1,84 @@
+﻿#莫比乌斯反演
+标签：数学
+***
+
+ $\color{green}{特别感谢：吉大附中实验学校 PoPoQQQ 童鞋 制作的ppt}$
+##定义
+###反演
+已知函数F(x)是可以通过f(x)变换而来的，现在求f(x)通过F(x)的变换。
+这样的逆变换称之为$\color{blue}{反演}$。
+举个栗子，$F(x)=f(x)^2$，则$f(x)=\pm \sqrt{F(x)}$
+
+###莫比乌斯反演
+规定了F(x)到f(x)的变换关系，然后求逆变换。已知$$F(x)=\sum_{d\mid x}f(d)$$则$$f(x)=\sum_{d\mid x}\mu(d)F({x\over d})$$其中$\mu(d)$可以当作是一个运算符，也被称为$\color{blue}{莫比乌斯函数}$。$$\mu(d)=\begin{cases}
+1 &\text{d = 1}\\
+(-1)^r &\text{$d=p_1p_2...p_r,其中p_i为不同的素数$}\\
+0 &\text{else}
+\end{cases}$$
+
+可以先给一个例子直观地感受一下这个变换：$$
+\begin{aligned} 
+&F(1)=f(1)\\&F(2)=f(1)+f(2)\\&F(3)=f(1)+f(3)\\
+&F(4)=f(1)+f(2)+f(4)\\&F(5)=f(1)+f(5)\\&F(6)=f(1)+f(2)+f(3)+f(6)\\
+&F(7)=f(1)+f(7)\\&F(8)=f(1)+f(2)+f(4)+f(8)\\&...\\
+\end{aligned} 
+$$则可以推出$$
+\begin{aligned} 
+&f(1)=F(1)\\&f(2)=F(2)-F(1)\\&f(3)=F(3)-F(1)\\
+&f(4)=F(4)-F(2)\\&f(5)=F(5)-F(1)\\&f(6)=F(6)-F(3)-F(2)+F(1)\\
+&f(7)=F(7)-F(1)\\&f(8)=F(8)-F(4)\\&...\\
+\end{aligned}$$$\mu(d)相当于代替了F(d)$前面的符号位,甚至可以是0，表示不需要此项。
+###另一种形式
+莫比乌斯公式还有一种常用的形式较为常用：
+当$F(d)=\sum_{d\mid x}f(x)$，则$f(d)=\sum_{d\mid x}\mu({x\over d})F(x)$
+x应该有个范围的~
+***
+##证明
+已知$F(x)=\sum_{d\mid x}f(d)$，求证$f(x)=\sum_{d\mid x}\mu(d)F({x\over d})$
+
+证明：$\sum_{d\mid x}\mu(d)F({x\over d})=\sum_{d\mid x}[\mu(d)\sum_{k\mid {x\over d}}f(k)]=\sum_{k\mid x}[f(k)\sum_{d\mid {x\over k}}\mu(d)]=f(x)$
+
+最后一步仅当${x\over k}=1$时，$\sum_{d\mid {x\over k}}\mu(d)=1$，其余均为0，故最后只剩下$f(x)$.
+***
+##性质
+1. $\mu(x)$是积性函数。
+其实x必须是无素数因子的平方项时才可行。
+
+2. $\sum_{d\mid x}\mu(d)=
+\begin{cases} 
+1,&\text{x=1}\\
+0,&\text{x>1}
+\end{cases} $
+证明x>1时的情况：当x的素因子有r个时，从r个里面选取k个乘积为d，$\sum_{d\mid x}\mu(d)=C_x^0+C_x^1(-1)^1+C_x^2(-1)^2...+C_x^x(-1)^x=(1-1)^x=0$
+
+3. $\sum_{d\mid x}{\mu(d)\over d}={\phi(x)\over x}$
+看起来是个诡异的性质，实际就是将$F(x)=x,f(x)=\phi(x)$代入其中。当然，前提是$n=\sum_{d\mid n}\phi(d)$[欧拉函数性质4](http://blog.csdn.net/danliwoo/article/details/48851073#t2)给出了证明。
+***
+##应用
+###线性筛法
+```cpp
+int mobi[N]={0,1}, num[N], prim[N], cnt = 0;
+void set()
+{
+	for(int i = 0;i < N;i++) num[i] = 1;
+	for(int i = 2;i < N;i++)
+	{
+		if(num[i])
+		{
+			prim[cnt++] = i;
+			mobi[i] = -1;
+		}
+		for(int j = 0;j < cnt && prim[j]*i < N;j++)
+		{
+			num[prim[j]*i] = 0;
+			if(i % prim[j] == 0)
+			{
+				mobi[prim[j]*i] = 0;
+				break;
+			}
+			mobi[prim[j]*i] = -mobi[i];
+		}
+	}
+}
+```
+

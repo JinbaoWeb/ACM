@@ -1,0 +1,34 @@
+#include <iostream>
+#include <string.h>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+struct minion{
+	int a,h;
+}m[2];
+int main(){
+	int t;
+	cin>>t;
+	while (t--){
+		cin>>m[0].a>>m[0].h>>m[1].a>>m[1].h;
+		if (m[0].a==0)
+			cout<<"Invalid"<<endl;
+		else{
+			if (m[0].h<=m[1].a)
+				cout<<"Discard";
+			else
+				cout<<m[0].a<<" "<<m[0].h-m[1].a;	
+			cout<<" ";
+			if (m[1].h<=m[0].a)
+				cout<<"Discard";
+			else
+				cout<<m[1].a<<" "<<m[1].h-m[0].a;	
+			cout<<endl;
+
+		}
+
+	}
+	
+	return 0;
+}
+

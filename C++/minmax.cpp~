@@ -1,0 +1,51 @@
+#include <iostream>
+using namespace std;
+#define min(x,y) x<y?x:y
+int A[1000];
+int x,y;
+void minmax(int low,int high, int &x,int &y)
+{
+	cout<<low<<" "<<high<<endl;
+	if (high==low)
+	{
+		x=y=A[low];
+		return;
+	}
+	if (high-low==1)
+	{
+		if (A[low] < A[high])
+		{
+			x=A[low];
+			y=A[high];
+			return;
+		}
+		else
+		{
+			x=A[high],y=A[low];
+			return;
+		}
+	}
+	else
+	{
+		int mid=(low+high)/2;
+		int x1,y1,x2,y2;
+		minmax(low,mid,x1,y1);
+		minmax(mid+1,high,x2,y2);
+		x=min(x1,x2);
+		y=min(y1,y2);
+		return;
+	}
+}
+int main()
+{
+	int n;
+	while (cin>>n)
+	{
+		for (int i=0;i<n;i++)
+			cin>>A[i];
+		int min,max;
+		minmax(0,n-1,min,max);
+		cout<<"The min number in array is :"<<min<<endl;
+		cout<<"The max number in array is :"<<max<<endl;
+	}	
+}

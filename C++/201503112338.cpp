@@ -1,0 +1,41 @@
+#include <iostream>
+#include <string.h>
+using namespace std;
+#define MAX 100000+5
+int main(){
+    int n,m;
+    int a[MAX];
+    int sum[MAX];
+    int index[MAX];
+    while (cin>>n>>m){
+	if (n==0&&m==0)
+	    break;
+	sum[0]=a[0]=0;
+	for (int i=1;i<=m;i++){
+	    cin>>a[i];
+	    sum[i]=(a[i]+sum[i-1])%n;
+	}
+	memset(index,-1,sizeof(index));
+	index[0]=0;
+	int flag=0;
+	for (int i=1;i<=m;i++){
+	    if (index[sum[i]]==-1)
+		index[sum[i]]=i;
+	    else{
+		for (int j=index[sum[i]]+1;j<=i;j++){
+		    flag=1;
+		    if (index[sum[i]]+1==j)
+			cout<<a[j];
+		    else
+			cout<<" "<<a[j];
+		}
+		break;
+	    }
+	}
+	if (flag==0)
+	    cout<<"no sweets";
+	cout<<endl;
+    }
+    return 0;
+}
+

@@ -1,0 +1,18 @@
+
+//快速读入
+inline void read(int &x){
+    char c=0;
+    for(;c<'0'||c>'9';c=getchar());
+    for(x=0;c>='0'&&c<='9';c=getchar())x=x*10+(c-'0');
+}
+
+const int BZ = 120 << 20;
+char  Buf[BZ + 1],*buf = Buf;
+template <class T>
+inline void read(T &x){
+    for (x=0;*buf < '0' || *buf > '9';++buf);
+    while(*buf >= '0' && *buf <='9'){
+    	a = a * 10 + (*buf - '0');
+    	++buf;
+    }
+}

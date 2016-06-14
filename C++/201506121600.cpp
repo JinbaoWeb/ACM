@@ -1,0 +1,101 @@
+/*******************************************************************************
+ * Author :          jinbao
+ * Email :           dongjinbao913106840144@gmail.com
+ * Last modified :   2015-06-12 16:00
+ * Filename :        201506121600.cpp
+ * Description :     
+ * *****************************************************************************/
+#include <iostream>
+using namespace std;
+void swap(int &x,int &y)
+{
+	int temp=x;
+	x=y;
+	y=temp;
+}
+void SiftDown(int a[],int x,int n)	//向下调整堆
+{
+	if (2*x>n) return;
+	while (2*x<=n)
+	{
+		int left=2*x,right=left+1,index=x,max=a[x];//left:左子节点 right：右字节点 index：最大值的下标 max：最大值
+		if (left<=n && a[left]>max)
+			index=left,max=a[left];
+		if (right<=n && a[right]>max)
+			index=right,max=a[right];
+		if (index==x) break;
+		swap(a[x],a[index]);
+		x=index;
+	}
+}
+void SiftUp(int a[],int x,int n)	//向上调整堆
+{
+	if (x==1) return;
+	while (x>1)
+	{
+		int parent=x/2;
+		if (a[x]>a[parent])
+		{
+			swap(a[x],a[parent]);
+			x=parent;
+		}
+		else
+			break;
+	}
+}
+void BuildHeap(int a[],int n)	//将数组a[1...n]转换为堆
+{
+	for (int i=(n+1)/2;i>0;i--){	//利用向下调整堆进行转换
+		SiftDown(a,i,n);
+	}
+//	for (int i=(n+1)/2;i<=n;i++)	//利用向上调整堆进行转换
+//		SiftUp(a,i,n);
+}
+void insert(int a[],int x,int &n)	//向堆里插入x
+{
+	a[n+1]=x;
+	n++;
+	SiftUp(a,n,n);
+}
+void Delete(int a[],int x,int &n)	//从堆里删除a[x]
+{
+	a[x]=a[n];
+	n--;
+	SiftDown(a,x,n);
+}
+void debug(int a[],int n)
+{
+	for (int i=1;i<=n;i++)
+		cout<<a[i]<<" ";
+	cout<<endl;
+}
+int main(){
+	int a[1000],n;
+	cout<<"输入要输入数组的大小：";
+	while (cin>>n)
+	{
+		cout<<"输入数组的元素：";
+		for (int i=1;i<=n;i++)
+			cin>>a[i];
+		BuildHeap(a,n);
+		cout<<"调整后堆为："<<endl;;
+		debug(a,n);
+		cout<<"输入要插入的数：";
+		int x;
+		cin>>x;
+		insert(a,x,n);
+		cout<<"插入一个数后的堆为："<<endl;
+		debug(a,n);
+		cout<<"输入要删除的数的下标：";
+		cin>>x;
+		Delete(a,x,n);
+		cout<<"输出删除一个数后的堆为："<<endl;
+		debug(a,n);
+	}
+    return 0;
+}
+/*
+10
+4 3 8 10 11 13 7 30 17 26
+*/
+

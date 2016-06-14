@@ -1,0 +1,48 @@
+#include <iostream>
+using namespace std;
+typedef long long ll;
+bool isprime(ll n){
+	if (n==2 || n==3 || n==5 || n==7)
+		return true;
+	for (ll i=2;i*i<=n;i++)
+		if (n%i==0)
+			return false;
+	return true;	
+}
+ll mul_mod(ll a,ll p,ll m){
+	ll res=0;
+	while (p){
+		if (p&1)
+			res=(res+a)%m;
+		a=(a+a)%m;
+		p>>=1;
+	}
+	return res;
+}
+ll pow_mod(ll a,ll p,ll m){	//a^p%p
+	ll res=1;
+	while (p){
+		if (p&1)
+			res=mul_mod(res,a,m);
+		a=mod_mul(a,a,m);
+		p>>=1;
+	}
+	return res;	
+}
+int main(){
+	int p,a;
+	while (cin>>p>>a){
+		if (p==0 && a==0)
+			break;
+		if (isprime(p)==true)
+			cout<<"no"<<endl;
+		else{
+			if (pow_mod(a,p,p)==a)
+				cout<<"yes"<<endl;
+			else
+				cout<<"no"<<endl;
+		}
+		
+	}
+	return 0;
+}

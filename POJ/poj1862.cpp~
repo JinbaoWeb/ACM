@@ -1,0 +1,35 @@
+/*******************************************************************************
+ * Author :          jinbao
+ * Email :           dongjinbao913106840144@gmail.com
+ * Last modified :   2015-05-16 23:32
+ * Filename :        poj1862.cpp
+ * Description :     
+ * *****************************************************************************/
+#include <iostream>
+#include <queue>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+int main(){
+	priority_queue<double> p;
+	int n;
+	double num;
+	while (cin>>n){
+		while (n--){
+			cin>>num;
+			p.push(num);
+		}
+		double a,b,ans;
+		while (p.size()){
+			a=p.top();
+			p.pop();
+			b=p.top();
+			p.pop();
+			ans=2*sqrt(a*b);
+			p.push(ans);
+		}
+		cout<<fixed<<setprecision(3)<<p.top()<<endl;
+	}
+
+	return 0;
+}

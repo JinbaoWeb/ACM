@@ -1,0 +1,67 @@
+/*******************************************************************************
+ * Author :          jinbao
+ * Email :           dongjinbao913106840144@gmail.com
+ * Last modified :   2015-06-12 17:12
+ * Filename :        UnionFind.cpp
+ * Description :     
+ * *****************************************************************************/
+#include <iostream>
+using namespace std;
+const int MAX_N = 1000;
+int par[MAX_N];//父亲
+int rank[MAX_N];//树的高度
+//初始化n个元素
+void init(int n)	//初始化n个元素
+{
+	for (int i=0;i<n;i++){
+		par[i]=i;
+		rank[i]=0;
+	}
+}
+
+int find(int x)	//查询树的根
+{
+	if (par[x]==x)
+		return x;
+	else
+		return par[x]=find(par[x]);	//路径压缩
+}
+void unite(int x,int y)	//合并x和y所属的集合
+{
+	x=find(x),y=find(y);
+	if (x==y) return;
+	if (rank[x]<rank[y])
+		par[x]=y;
+	else
+	{
+		par[y]=x;
+		if (rank[x]==rank[y])
+			rank[x]++;
+	}
+}
+bool same(int x,int y)	//判断x和y是否属于同一集合
+{
+	return find(x)==find(y);
+}
+int main(){
+	int n,m,x,y;
+	cout<<"输入集合中元素的个数：";
+	cin>>n;
+	init(n);
+	cout<<"输入集合中有有关系的关系对数：";
+	cin>>m;
+	while (m--)
+	{
+		cin>>x>>y;
+		unite(x,y);
+	}
+	cout<<"输入查询是否为同一集合的两个数：";
+	cin>>x>>y;
+	cout<<"输出查询结果：";
+	if (same(x,y)==true)
+		cout<<"true"<<endl;
+	else
+		cout<<"false"<<endl;
+    return 0;
+}
+

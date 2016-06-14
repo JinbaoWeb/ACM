@@ -1,0 +1,37 @@
+/*******************************************************************************
+ * Author :          jinbao
+ * Email :           dongjinbao913106840144@gmail.com
+ * Last modified :   2015-05-10 14:11
+ * Filename :        201505101411.cpp
+ * Description :     
+ * *****************************************************************************/
+#include <iostream>
+#include <math.h>
+using namespace std;
+typedef long long ll;
+int dp[100002];
+void solve(){
+	dp[0]=0;
+	dp[1]=1;
+	dp[2]=2;
+	for (int i=3;i<100002;i++){
+		dp[i]=dp[i-1]+dp[i-2]+1;
+		dp[i]%=10000007;
+	}
+}
+int main(){
+	int m,n;
+	solve();
+	while (cin>>m>>n){
+		if (m==-1&&n==-1)
+			break;
+		int k=sqrt(m);
+		if (k*k!=m)
+			cout<<"No girl"<<endl;
+		else{
+			cout<<dp[n]<<endl;
+		}
+	}
+
+	return 0;
+}

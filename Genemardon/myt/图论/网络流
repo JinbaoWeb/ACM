@@ -1,0 +1,242 @@
+//应用：最大流，最小割，最大权闭合图，最大密度子图
+//构图方法：原图构图、二分图构图(二选一最小割）、拆点构图、点权构图。
+//Dinic 最大流非递归版
+//邻接表存边
+
+
+#include <stdio.h>
+#include <string.h>
+#include <algorithm>
+#include <stack>
+#include <queue>
+#define inf 1000000009
+#define MAXN 1000
+#define MAXM 30000
+using namespace std;
+struct note
+{
+	int u,v,w;
+	note () {}
+	note (int u,int v,int w) : u(u),v(v),w(w) {}
+} p[MAXM];
+int n,m;
+int e,ans;
+int next[MAXM],head[MAXN],cur[MAXN];
+int dep[MAXN];
+void addnote(int u,int v,int w)
+{
+	p[e]= note (u,v,w);
+	next[e]=head[u];head[u]=e++;
+}
+void init()
+{
+	e=0;
+	memset(head,-1,sizeof(head));
+	memset(next,-1,sizeof(next));
+}
+bool bfs(int start,int end)
+{
+	queue<int>q;
+	memset(dep,-1,sizeof(dep));
+	q.push(start);dep[start]=0;
+	while (!q.empty())
+	{
+		int tmp=q.front();q.pop();
+		if (tmp==end) return true;
+		for (int i=head[tmp];i+1;i=next[i]) if (p[i].w>0 && dep[p[i].v]==-1)
+		{
+			dep[p[i].v]=dep[tmp]+1;
+			q.push(p[i].v);
+		}
+	}
+	return false;
+}
+int dinic(int start,int end)
+{
+	int res=0,top=0,u;
+	int stack[MAXM];
+	int cur[MAXN];
+	while (bfs(start,end))    //建立层次图
+	{
+		top=0;u=start;
+		memcpy(cur,head,sizeof(head));  //复制邻接表head指针方便实现dfs的vis标记
+		while (1)
+		{
+			if (u==end)				//找到增广路
+			{
+				int MIN=inf,pos;
+				for (int i=0;i<top;i++) if (p[stack[i]].w<MIN)
+				{
+					MIN=p[stack[i]].w;
+					pos=i;
+				}
+				res+=MIN;						//找到最小流量，加入结果
+				for (int i=0;i<top;i++)
+				{
+					p[stack[i]].w-=MIN;
+					p[stack[i] ^ 1].w+=MIN;
+				}
+				top=pos;
+				u=p[stack[pos]].u;					//更新，同时将最小边和它之后入栈的边弹出，然后继续dfs
+			}
+			for (int i=cur[u];i!=-1;i=cur[u]=next[i])
+				if (p[i].w!=0 && dep[p[i].v]==dep[u]+1)		
+					break;					//非递归DFS
+			if (cur[u]!=-1)
+			{
+				stack[top++]=cur[u];
+				u=p[cur[u]].v;
+			}
+			else
+			{
+				if (top==0) break;
+				dep[u]=-1;
+				u=p[stack[--top]].u;
+			}
+		}
+	}
+	return res;
+}
+
+
+
+//Dinic  递归版
+//建图和BFS和非递归版一样。修改了solve入口和dinic递归。代码简便了很多。
+
+int dinic(int start,int end,int x,int maxflow)		//double
+{
+	if (x==end)
+		return maxflow;
+	for (int i=cur[x];i+1;i=cur[x]=next[i]) 
+		if (p[i].w>0 && dep[x]+1==dep[p[i].v])		//>eps
+		{
+			int flow = dinic(start,end,p[i].v,min(maxflow,p[i].w));	//double
+			if (flow)				//>eps
+			{
+				p[i].w-=flow;
+				p[i ^ 1].w +=flow;
+				return flow;
+			}
+		}
+	return 0;
+}
+void solve(int start,int end)
+{
+	int flow;ans=0;		//double
+	while (bfs(start,end))
+	{
+		memcpy(cur,head,sizeof(head));
+		while (flow=dinic(start,end,start,inf)) ans+=flow;		//>eps
+	}
+}
+
+
+//最小割等于最大流
+//无向图如果可以转化为有向图最好，不行的话考虑stoer-wagner   O(v^3)  head_prim O(v^2logv) 
+
+int n,m,ans,MAX,minC;
+int vis[510],comb[510],w[510];		//vis记录点在dijstra中是否被访问，comb记录点在全局是否被合并
+int tab[510][510];
+void search(int &s,int &t)
+{
+	int pos;
+	memset(vis,0,sizeof(vis));
+	memset(w,0,sizeof(w));
+	for (int i=0;i<n;i++)				//dijstra 求最大生成树
+	{
+		MAX=-inf;
+		for (int j=0;j<n;j++) 
+			if (!vis[j]&&!comb[j]&&MAX<w[j]){
+			    MAX=w[j];
+			    pos=j;
+		    }
+		if (t==pos){
+			minC=w[pos];
+			return;
+		}
+		vis[pos]=1;
+		s=t;t=pos;
+		for (int j=0;j<n;j++) 
+			if (!vis[j]&&!comb[j])
+			    w[j]=w[j]+tab[t][j];
+		
+	}
+	minC=w[t];				//w[t]为最后两个点的割集
+}
+void mincut()
+{
+	ans=inf;
+	memset(comb,0,sizeof(comb));					
+	for (int i=0;i<n-1;i++)
+	{
+		int s=-1,t=-1;
+		search(s,t);
+		comb[t]=1;				//将最后一个点并到最后第二个点上
+		ans=min(ans,minC);
+		for (int j=0;j<n;j++)
+		{
+			tab[s][j]+=tab[t][j];
+			tab[j][s]+=tab[j][t];
+		}
+	}
+}
+
+
+
+
+
+//  最小费用最大流，以费用为边权,用SPFA求最短路，更新增广路。
+//  最大费用最大流，其实就是用SPFA求最长路，然后增广，但是要保证不能出现环！！
+
+struct note
+{
+	int u,v,cap,cost;
+	note () {}
+	note (int u,int v,int cap,int cost) : u(u),v(v),cap(cap),cost(cost) {}
+} p[100000];
+int n,k,ans,e;
+int head[20000],ne[100000],vis[20000],pre[20000],dis[20000];
+int tab[510][510];
+bool spfa(int start,int end)    //SPFA求最段路
+{
+	memset(vis,0,sizeof(vis));
+	for (int i=1;i<=n;i++) dis[i]=inf;
+	memset(pre,-1,sizeof(pre));							//初始化根据题目来
+	queue<int>q;
+	q.push(start);dis[start]=0;
+	while  (!q.empty())							//SPFA
+	{
+		int tmp=q.front();q.pop();
+		vis[tmp]=0;
+		for (int i=head[tmp];i+1;i=ne[i]) if (p[i].cap>0 && dis[p[i].v]>dis[tmp]+p[i].cost)     //可增广，且距离可更新
+		{
+			dis[p[i].v]=dis[tmp]+p[i].cost;
+			pre[p[i].v]=i;
+			if (!vis[p[i].v])
+			{
+				vis[p[i].v]=1;
+				q.push(p[i].v);
+			}
+		}
+	}
+	//if (dis[2*N+1]<=0) return false;
+	if (dis[n]!=inf)
+	return true;
+}
+void end()
+{
+	int flow=inf,x=n;
+	while (x)					//通过pre前缀标识，找出maxflow
+	{
+		flow=min(flow,p[pre[x]].cap);
+		x=p[pre[x]].u;
+	}								
+	x=n;
+	while (x)					//更新
+	{
+		ans=ans+flow*p[pre[x]].cost;
+		p[pre[x]].cap-=flow;
+		p[pre[x]^1].cap+=flow;
+		x=p[pre[x]].u;
+	}
+}

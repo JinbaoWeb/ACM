@@ -1,0 +1,60 @@
+/*******************************************************************************
+ * Author :          jinbao
+ * Email :           dongjinbao913106840144@gmail.com
+ * Last modified :   2015-05-28 00:44
+ * Filename :        uva10288.cpp
+ * Description :     
+ * *****************************************************************************/
+#include <iostream>
+#include <stdio.h>
+#include <string.h>
+using namespace std;
+typedef long long ll;
+ll gcd(ll x,ll y){
+	if (!x || !y)
+		return x>y?x:y;
+	for (ll t;t=x%y;x=y,y=t);
+	return y;
+}
+int main(){
+	ll n;
+	while (~scanf("%lld",&n)){
+		ll x=1,y=1;
+		for (ll i=1;i<=n;i++){
+			x=x*i+y*n;
+			y=y*i;
+			ll k=gcd(x,y);
+			x=x/k;
+			y=y/k;
+		}
+		if (y==1)
+			printf("%lld\n",x-1);
+		else{
+			ll left=x%y;
+			ll a=x/y;
+			ll a1=a;
+			while (a1){
+				printf(" ");
+				a1/=10;
+			}
+			printf(" %lld\n",left);
+			printf("%d ",a-1);
+			ll a2=y;
+			while (a2){
+				printf("-");
+				a2/=10;
+			}
+			printf("\n");
+			ll a3=a;
+			while (a3){
+				printf(" ");
+				a3/=10;
+			}
+			printf(" %lld\n",y);
+
+
+		}
+	}
+
+	return 0;
+}

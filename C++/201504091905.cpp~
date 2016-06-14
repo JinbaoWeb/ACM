@@ -1,0 +1,80 @@
+#include <iostream>
+#include <stdio.h>    
+#include "stdlib.h"
+using namespace std;
+#define MAX 100 
+#define TRUE   1    
+#define FALSE   0    
+#define OK    1    
+#define ERROR   0    
+#define INFEASIBLE -1    
+#define OVERFLOW -2  
+#define STACKEMPTY -3    
+ 
+#define LT(a,b)   ((a)<(b))    
+#define N = 100          
+ 
+typedef int Status;    
+typedef int ElemType;    
+ 
+typedef struct LNode{    
+    ElemType        data;                
+    struct LNode   *next;      
+}LNode, *LinkList;  
+ 
+typedef struct stack{  
+    LinkList top;  
+} STACK;  
+void InitStack(STACK &S){  
+    S.top=NULL;  
+}
+bool StackEmpty(STACK S){	// 判断栈S是否空
+    if(S.top==NULL) return TRUE;  
+    return   FALSE;  
+}
+void Push(STACK &S,ElemType e){  //入栈
+    LinkList p;  
+    p = new LNode;
+	if (!p) exit(OVERFLOW);  
+    p->data = e;  
+    p->next = S.top;  
+    S.top = p;  
+}
+void Pop(STACK &S, ElemType e){	// 出栈
+    LinkList p;  
+    if(StackEmpty(S)) exit(STACKEMPTY);  
+    e = S.top->data;  
+    p = S.top;  
+    S.top = p->next;  
+    delete(p);  
+}
+ElemType GetTop(STACK S, ElemType e){	// 获取栈顶元素内容
+    if(StackEmpty(S)) exit(STACKEMPTY);  
+    e = S.top->data;
+	return e;
+}   
+  
+void conversion(ElemType n,int d){
+	STACK s;
+	ElemType e;
+	InitStack(s);
+	while (n){
+		Push(s,n%d);
+		cout<<n%d<<endl;
+		n/=d;
+
+	}
+	while (StackEmpty(s)==false){
+		cout<<GetTop(s,e);
+		Pop(s,e);
+	}
+	cout<<endl;
+}
+int main(){
+	int n,d;
+	while (cin>>n>>d){
+		conversion(n,d);
+	}
+
+	return 0;
+}

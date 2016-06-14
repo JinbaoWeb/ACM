@@ -1,0 +1,59 @@
+/*******************************************************************************
+ * Author :          jinbao
+ * Email :           dongjinbao913106840144@gmail.com
+ * Last modified :   2015-05-11 20:30
+ * Filename :        poj3264.cpp
+ * Description :     
+ * *****************************************************************************/
+#include <iostream>
+#include <stdio.h>
+using namespace std;
+#define min(x,y) x<y?x:y
+#define max(x,y) x>y?x:y
+const int MAX = 50000+1;
+struct cow{
+	int Min,Max;
+}p[4*MAX];
+int a[MAX];
+void build(int node,int begin,int end){
+	if (begin==end){
+		scanf("%d",&a[begin]);
+		p[node].Min=p[node].Max=a[begin];
+	}
+	else{
+		build(node*2,begin,(begin+end)/2);
+		build(node*2+1,(begin+end)/2+1,end);
+		p[node].Min=min(p[node*2].Min,p[node*2+1].Min);
+		p[node].Max=max(p[node*2].Max,p[node*2+1].Max);
+	}
+}
+int query(int node,int begin,int end,int left,int right,int flag){
+	if (end<left || begin>right){
+		if (flag==0)
+			return 0xffffff;
+		return -1;
+	}
+	if (begin>=left && end<=right){
+		if (flag==0)
+			return p[node].Min;
+		return p[node].Max;
+	}
+	int m=query(2*node,begin,(begin+end)/2,left,right,flag);
+	int n=query(2*node+1,(begin+end)/2+1,end,left,right,flag);
+	if (flag==0)
+		return min(m,n);
+	return max(m,n);
+}
+int main(){
+	int n,q,l,r,Min,Max;
+	while (~scanf("%d%d",&n,&q)){
+		build(1,1,n);
+		while (q--){
+			scanf("%d%d",&l,&r);
+			int ans = query(1,1,n,l,r,1) - query(1,1,n,l,r,0);
+			printf("%d\n",ans);
+		}
+	}
+
+	return 0;
+}

@@ -1,0 +1,32 @@
+#include <iostream>
+#include <stdio.h>
+#include <string.h>
+using namespace std;
+int main(){
+	int t,n;
+	int a=1500,b=1500;
+	char str[10];
+	while (scanf("%d",&t)){
+	while (t--){
+		a=1500,b=1500;
+		scanf("%d",&n);
+		while (n--){
+			scanf("%s",&str);
+			if (strcmp(str,"good")==0){
+				if (a>b || a>=3299 || a<=0)
+					b+=100;
+				else
+					a+=100;
+			}
+			else{
+				if (a>b || b<=0 || b>=3299)
+					b-=100;
+				else
+					a-=100;
+			}
+		}
+		printf("%d\n",a>b?a:b);
+	}
+	}
+	return 0;
+}
